@@ -4,8 +4,8 @@ import Kingfisher
 class IJSGrammarTest {
 
     func play() {
-        let view = UIView()
-        view.js.base
+        let view = UIImageView()
+        view.js.click()
     }
 }
 
@@ -28,3 +28,8 @@ extension IJSKingfisherCompatible {
 extension UIImageView: IJSKingfisherCompatible { }
 extension UIView: IJSKingfisherCompatible { }
 
+extension IJSKingfisherWrapper where Base: UIImageView {
+    public func click() {
+        print("金山")
+    }
+}

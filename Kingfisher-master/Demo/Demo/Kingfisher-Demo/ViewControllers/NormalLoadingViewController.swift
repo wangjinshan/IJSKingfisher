@@ -49,17 +49,16 @@ extension NormalLoadingViewController {
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let imageView = (cell as! ImageCollectionViewCell).cellImageView!
-        imageView.kf.setImage(
-            with: ImageLoader.sampleImageURLs[indexPath.row],
-            placeholder: nil,
-            options: [.transition(.fade(1)), .loadDiskFileSynchronously],
-            progressBlock: { receivedSize, totalSize in
-                print("\(indexPath.row + 1): \(receivedSize)/\(totalSize)")
-            },
-            completionHandler: { result in
-                print(result)
-                print("\(indexPath.row + 1): Finished")
-            }
+        imageView.kf.setImage(with: ImageLoader.sampleImageURLs[indexPath.row],
+                              placeholder: nil,
+                              options: [.transition(.fade(1)), .loadDiskFileSynchronously],
+                              progressBlock: { receivedSize, totalSize in
+                                print("\(indexPath.row + 1): \(receivedSize)/\(totalSize)")
+                              },
+                              completionHandler: { result in
+                                print(result)
+                                print("\(indexPath.row + 1): Finished")
+                              }
         )
     }
     

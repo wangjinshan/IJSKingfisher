@@ -48,6 +48,7 @@ extension KingfisherCompatibleValue {
     }
 }
 
+/// 给系统默认的 控件(UIImageView) 扩展, 让控件拥有 kf属性
 extension KFCrossPlatformImage: KingfisherCompatible { }
 #if !os(watchOS)
 extension KFCrossPlatformImageView: KingfisherCompatible { }
