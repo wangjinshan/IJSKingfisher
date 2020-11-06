@@ -11,7 +11,6 @@ extension Array where Element == KingfisherOptionsInfoItem {
 }
 
 public enum KingfisherOptionsInfoItem {
-
     case targetCache(ImageCache)
     case originalCache(ImageCache)
     case downloader(ImageDownloader)
@@ -50,6 +49,7 @@ public enum KingfisherOptionsInfoItem {
     case retryStrategy(RetryStrategy)
 }
 
+/// 配置信息
 public struct KingfisherParsedOptionsInfo {
     public var targetCache: ImageCache? = nil
     public var originalCache: ImageCache? = nil
@@ -71,7 +71,7 @@ public struct KingfisherParsedOptionsInfo {
     public var processor: ImageProcessor = DefaultImageProcessor.default
     public var imageModifier: ImageModifier? = nil
     public var cacheSerializer: CacheSerializer = DefaultCacheSerializer.default
-    public var keepCurrentImageWhileLoading = false
+    public var keepCurrentImageWhileLoading = false 
     public var onlyLoadFirstFrame = false
     public var cacheOriginalImage = false
     public var onFailureImage: Optional<KFCrossPlatformImage?> = .none

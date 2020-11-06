@@ -2,10 +2,10 @@ import UIKit
 import Kingfisher
 
 class IJSGrammarTest {
-
     func play() {
         let view = UIImageView()
         view.js.click()
+        view.kf.taskIdentifier
     }
 }
 
@@ -31,5 +31,20 @@ extension UIView: IJSKingfisherCompatible { }
 extension IJSKingfisherWrapper where Base: UIImageView {
     public func click() {
         print("金山")
+    }
+}
+
+// MARK: - Result
+class IJSResult  {
+    func setImage(completionHandler: ((Result<Int, KingfisherError>) -> Void)?) {
+
+    }
+
+    private func test() {
+        setImage { (result) in
+            if case .success(let count) = result {
+                print("\(count) unread messages.")
+            }
+        }
     }
 }

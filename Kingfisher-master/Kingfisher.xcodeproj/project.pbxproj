@@ -1087,7 +1087,7 @@
 				INFOPLIST_FILE = Sources/Info.plist;
 				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=150";
+				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=550";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.onevcat.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_BUNDLE_PACKAGE_TYPE = FMWK;
 				PRODUCT_NAME = Kingfisher;
@@ -1222,7 +1222,7 @@
 				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=150";
+				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=550";
 				PRODUCT_BUNDLE_IDENTIFIER = com.onevcat.KingfisherSwiftUI;
 				PRODUCT_BUNDLE_PACKAGE_TYPE = FMWK;
 				PRODUCT_NAME = KingfisherSwiftUI;

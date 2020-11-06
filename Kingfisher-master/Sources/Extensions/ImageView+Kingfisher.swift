@@ -22,13 +22,10 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
             completionHandler?(.failure(KingfisherError.imageSettingError(reason: .emptySource)))
             return nil
         }
-
         var options = KingfisherParsedOptionsInfo(KingfisherManager.shared.defaultOptions + (options ?? .empty))
-
         let isEmptyImage = base.image == nil && self.placeholder == nil
         if !options.keepCurrentImageWhileLoading || isEmptyImage {
-            // Always set placeholder while there is no image/placeholder yet.
-            mutatingSelf.placeholder = placeholder
+            mutatingSelf.placeholder = placeholder  // 没设置站位图就设置一个
         }
 
         let maybeIndicator = indicator
@@ -132,10 +129,6 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
             completionHandler: completionHandler)
     }
 
-    // MARK: Cancelling Downloading Task
-
-    /// Cancels the image download task of the image view if it is running.
-    /// Nothing will happen if the downloading has already finished.
     public func cancelDownloadTask() {
         imageTask?.cancel()
     }
@@ -182,7 +175,7 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
     }
 }
 
-// MARK: - Associated Object
+// MARK: - 关联对象
 private var taskIdentifierKey: Void?
 private var indicatorKey: Void?
 private var indicatorTypeKey: Void?
@@ -191,7 +184,6 @@ private var imageTaskKey: Void?
 
 extension KingfisherWrapper where Base: KFCrossPlatformImageView {
 
-    // MARK: Properties
     public private(set) var taskIdentifier: Source.Identifier.Value? {
         get {
             let box: Box<Source.Identifier.Value>? = getAssociatedObject(base, &taskIdentifierKey)
@@ -221,10 +213,7 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
             setRetainedAssociatedObject(base, &indicatorTypeKey, newValue)
         }
     }
-    
-    /// Holds any type that conforms to the protocol `Indicator`.
-    /// The protocol `Indicator` has a `view` property that will be shown when loading an image.
-    /// It will be `nil` if `indicatorType` is `.none`.
+
     public private(set) var indicator: Indicator? {
         get {
             let box: Box<Indicator>? = getAssociatedObject(base, &indicatorKey)
@@ -232,16 +221,11 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
         }
         
         set {
-            // Remove previous
-            if let previousIndicator = indicator {
+            if let previousIndicator = indicator { //移除
                 previousIndicator.view.removeFromSuperview()
             }
-            
-            // Add new
-            if let newIndicator = newValue {
-                // Set default indicator layout
+            if let newIndicator = newValue { //新加并且默认布局
                 let view = newIndicator.view
-                
                 base.addSubview(view)
                 view.translatesAutoresizingMaskIntoConstraints = false
                 view.centerXAnchor.constraint(

@@ -59,12 +59,12 @@ extension ViewController: NSCollectionViewDataSource {
         
         item.imageView?.kf.indicatorType = .activity
         item.imageView?.kf.setImage(with: url, placeholder: nil, options: nil,
-                                                   progressBlock: { receivedSize, totalSize in
-                                                    print("\(indexPath.item + 1): \(receivedSize)/\(totalSize)")
-                                                    },
-                                              completionHandler: { result in
-                                                    print("\(indexPath.item + 1): Finished")
-                                                    })
+                                    progressBlock: { receivedSize, totalSize in
+                                        print("\(indexPath.item + 1): \(receivedSize)/\(totalSize)")
+                                    },
+                                    completionHandler: { result in
+                                        print("\(indexPath.item + 1): Finished")
+                                    })
         
         // Set imageView's `animates` to true if you are loading a GIF.
         // item.imageView?.animates = true
