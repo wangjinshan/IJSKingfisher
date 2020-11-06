@@ -47,52 +47,46 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
         }) {
             options.onDataReceived = (options.onDataReceived ?? []) + [provider]
         }
-        
+
         options.onDataReceived?.forEach {
             $0.onShouldApply = { issuedIdentifier == self.taskIdentifier }
         }
 
-        let task = KingfisherManager.shared.retrieveImage(
-            with: source,
-            options: options,
-            downloadTaskUpdated: { mutatingSelf.imageTask = $0 },
-            completionHandler: { result in
-                CallbackQueue.mainCurrentOrAsync.execute {
-                    maybeIndicator?.stopAnimatingView()
-                    guard issuedIdentifier == self.taskIdentifier else {
-                        let reason: KingfisherError.ImageSettingErrorReason
-                        do {
-                            let value = try result.get()
-                            reason = .notCurrentSourceTask(result: value, error: nil, source: source)
-                        } catch {
-                            reason = .notCurrentSourceTask(result: nil, error: error, source: source)
-                        }
-                        let error = KingfisherError.imageSettingError(reason: reason)
-                        completionHandler?(.failure(error))
-                        return
+        let task = KingfisherManager.shared.retrieveImage(with: source, options: options, downloadTaskUpdated: { mutatingSelf.imageTask = $0 }, completionHandler: { result in
+            CallbackQueue.mainCurrentOrAsync.execute {
+                maybeIndicator?.stopAnimatingView()
+                guard issuedIdentifier == self.taskIdentifier else {
+                    let reason: KingfisherError.ImageSettingErrorReason
+                    do {
+                        let value = try result.get()
+                        reason = .notCurrentSourceTask(result: value, error: nil, source: source)
+                    } catch {
+                        reason = .notCurrentSourceTask(result: nil, error: error, source: source)
                     }
-                    
-                    mutatingSelf.imageTask = nil
-                    mutatingSelf.taskIdentifier = nil
-                    
-                    switch result {
+                    let error = KingfisherError.imageSettingError(reason: reason)
+                    completionHandler?(.failure(error))
+                    return
+                }
+
+                mutatingSelf.imageTask = nil
+                mutatingSelf.taskIdentifier = nil
+
+                switch result {
                     case .success(let value):
-                        guard self.needsTransition(options: options, cacheType: value.cacheType) else {
-                            mutatingSelf.placeholder = nil
-                            self.base.image = value.image
+                            guard self.needsTransition(options: options, cacheType: value.cacheType) else {
+                                mutatingSelf.placeholder = nil
+                                self.base.image = value.image
+                                completionHandler?(result)
+                                return
+                            }
+                            self.makeTransition(image: value.image, transition: options.transition) {
+                                completionHandler?(result)
+                            }
+                        case .failure:
+                            if let image = options.onFailureImage {
+                                self.base.image = image
+                            }
                             completionHandler?(result)
-                            return
-                        }
-                        
-                        self.makeTransition(image: value.image, transition: options.transition) {
-                            completionHandler?(result)
-                        }
-                        
-                    case .failure:
-                        if let image = options.onFailureImage {
-                            self.base.image = image
-                        }
-                        completionHandler?(result)
                     }
                 }
             }
@@ -103,10 +97,10 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
 
     @discardableResult
     public func setImage(with resource: Resource?,
-                         placeholder: Placeholder? = nil,
-                         options: KingfisherOptionsInfo? = nil,
-                         progressBlock: DownloadProgressBlock? = nil,
-                         completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)? = nil) -> DownloadTask? {
+        placeholder: Placeholder? = nil,
+        options: KingfisherOptionsInfo? = nil,
+        progressBlock: DownloadProgressBlock? = nil,
+        completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)? = nil) -> DownloadTask? {
         return setImage(
             with: resource?.convertToSource(),
             placeholder: placeholder,
@@ -135,20 +129,19 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
 
     private func needsTransition(options: KingfisherParsedOptionsInfo, cacheType: CacheType) -> Bool {
         switch options.transition {
-        case .none:
-            return false
-        #if !os(macOS)
-        default:
-            if options.forceTransition { return true }
-            if cacheType == .none { return true }
-            return false
-        #endif
+            case .none:
+                return false
+            #if !os(macOS)
+            default:
+                if options.forceTransition { return true }
+                if cacheType == .none { return true }
+                return false
+            #endif
         }
     }
 
     private func makeTransition(image: KFCrossPlatformImage, transition: ImageTransition, done: @escaping () -> Void) {
         #if !os(macOS)
-        // Force hiding the indicator without transition first.
         UIView.transition(
             with: self.base,
             duration: 0.0,
@@ -204,10 +197,10 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
         
         set {
             switch newValue {
-            case .none: indicator = nil
-            case .activity: indicator = ActivityIndicator()
-            case .image(let data): indicator = ImageIndicator(imageData: data)
-            case .custom(let anIndicator): indicator = anIndicator
+                case .none: indicator = nil
+                case .activity: indicator = ActivityIndicator()
+                case .image(let data): indicator = ImageIndicator(imageData: data)
+                case .custom(let anIndicator): indicator = anIndicator
             }
 
             setRetainedAssociatedObject(base, &indicatorTypeKey, newValue)
@@ -234,14 +227,14 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
                     equalTo: base.centerYAnchor, constant: newIndicator.centerOffset.y).isActive = true
 
                 switch newIndicator.sizeStrategy(in: base) {
-                case .intrinsicSize:
-                    break
-                case .full:
-                    view.heightAnchor.constraint(equalTo: base.heightAnchor, constant: 0).isActive = true
-                    view.widthAnchor.constraint(equalTo: base.widthAnchor, constant: 0).isActive = true
-                case .size(let size):
-                    view.heightAnchor.constraint(equalToConstant: size.height).isActive = true
-                    view.widthAnchor.constraint(equalToConstant: size.width).isActive = true
+                    case .intrinsicSize:
+                        break
+                    case .full:
+                        view.heightAnchor.constraint(equalTo: base.heightAnchor, constant: 0).isActive = true
+                        view.widthAnchor.constraint(equalTo: base.widthAnchor, constant: 0).isActive = true
+                    case .size(let size):
+                        view.heightAnchor.constraint(equalToConstant: size.height).isActive = true
+                        view.widthAnchor.constraint(equalToConstant: size.width).isActive = true
                 }
                 
                 newIndicator.view.isHidden = true

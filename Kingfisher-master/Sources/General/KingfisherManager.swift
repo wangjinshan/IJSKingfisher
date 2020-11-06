@@ -81,10 +81,7 @@ public class KingfisherManager {
         let retrievingContext = RetrievingContext(options: options, originalSource: source)
         var retryContext: RetryContext?
 
-        func startNewRetrieveTask(
-            with source: Source,
-            downloadTaskUpdated: DownloadTaskUpdatedBlock?
-        ) {
+        func startNewRetrieveTask(with source: Source, downloadTaskUpdated: DownloadTaskUpdatedBlock?) {
             let newTask = self.retrieveImage(with: source, context: retrievingContext) { result in
                 handler(currentSource: source, result: result)
             }
@@ -155,46 +152,27 @@ public class KingfisherManager {
             }
         }
 
-        return retrieveImage(
-            with: source,
-            context: retrievingContext)
-        {
+        return retrieveImage(with: source, context: retrievingContext) {
             result in
             handler(currentSource: source, result: result)
         }
-
     }
     
     private func retrieveImage(with source: Source,
                                context: RetrievingContext,
                                completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) -> DownloadTask? {
         let options = context.options
-        if options.forceRefresh {
-            return loadAndCacheImage(
-                source: source,
-                context: context,
-                completionHandler: completionHandler)?.value
-            
+        if options.forceRefresh { //强制刷新
+            return loadAndCacheImage(source: source, context: context, completionHandler: completionHandler)?.value
         } else {
-            let loadedFromCache = retrieveImageFromCache(
-                source: source,
-                context: context,
-                completionHandler: completionHandler)
-            
-            if loadedFromCache {
-                return nil
-            }
-            
+            let loadedFromCache = retrieveImageFromCache(source: source, context: context, completionHandler: completionHandler)
+            if loadedFromCache { return nil }
             if options.onlyFromCache {
                 let error = KingfisherError.cacheError(reason: .imageNotExisting(key: source.cacheKey))
                 completionHandler?(.failure(error))
                 return nil
             }
-            
-            return loadAndCacheImage(
-                source: source,
-                context: context,
-                completionHandler: completionHandler)?.value
+            return loadAndCacheImage(source: source, context: context, completionHandler: completionHandler)?.value
         }
     }
 
@@ -319,7 +297,6 @@ public class KingfisherManager {
                 completionHandler: completionHandler
             )
         }
-
         switch source {
             case .network(let resource):
             let downloader = options.downloader ?? self.downloader
@@ -350,11 +327,10 @@ public class KingfisherManager {
                                 context: RetrievingContext,
                                 completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) -> Bool {
         let options = context.options
-        // 1. Check whether the image was already in target cache. If so, just get it.
+        // 1. 判断图片是否已经存在目标缓存中
         let targetCache = options.targetCache ?? cache
         let key = source.cacheKey
-        let targetImageCached = targetCache.imageCachedType(
-            forKey: key, processorIdentifier: options.processor.identifier)
+        let targetImageCached = targetCache.imageCachedType(forKey: key, processorIdentifier: options.processor.identifier)
         
         let validCache = targetImageCached.cached &&
             (options.fromMemoryCacheOrRefresh == false || targetImageCached == .memory)

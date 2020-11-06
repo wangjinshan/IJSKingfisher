@@ -5,7 +5,7 @@ class IJSGrammarTest {
     func play() {
         let view = UIImageView()
         view.js.click()
-        view.kf.taskIdentifier
+        view.kf.setImage(with: URL(string: ""))
     }
 }
 
