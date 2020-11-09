@@ -1,33 +1,7 @@
-//
-//  SessionDelegate.swift
-//  Kingfisher
-//
-//  Created by Wei Wang on 2018/11/1.
-//
-//  Copyright (c) 2019 Wei Wang <onevcat@gmail.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
 
 import Foundation
 
-// Represents the delegate object of downloader session. It also behave like a task manager for downloading.
-@objc(KFSessionDelegate) // Fix for ObjC header name conflicting. https://github.com/onevcat/Kingfisher/issues/1530
+@objc(KFSessionDelegate) 
 class SessionDelegate: NSObject {
 
     typealias SessionChallengeFunc = (
@@ -53,27 +27,19 @@ class SessionDelegate: NSObject {
     let onReceiveSessionChallenge = Delegate<SessionChallengeFunc, Void>()
     let onReceiveSessionTaskChallenge = Delegate<SessionTaskChallengeFunc, Void>()
 
-    func add(
-        _ dataTask: URLSessionDataTask,
-        url: URL,
-        callback: SessionDataTask.TaskCallback) -> DownloadTask
-    {
+    func add( _ dataTask: URLSessionDataTask, url: URL, callback: SessionDataTask.TaskCallback) -> DownloadTask {
         lock.lock()
         defer { lock.unlock() }
 
-        // Create a new task if necessary.
+        // 创建一个task
         let task = SessionDataTask(task: dataTask)
         task.onCallbackCancelled.delegate(on: self) { [weak task] (self, value) in
             guard let task = task else { return }
-
             let (token, callback) = value
-
             let error = KingfisherError.requestError(reason: .taskCancelled(task: task, token: token))
             task.onTaskDone.call((.failure(error), [callback]))
-            // No other callbacks waiting, we can clear the task now.
-            if !task.containsCallbacks {
+            if !task.containsCallbacks { // 没有callbacks等待则清理 task
                 let dataTask = task.task
-
                 self.cancelTask(dataTask)
                 self.remove(task)
             }
@@ -89,11 +55,7 @@ class SessionDelegate: NSObject {
         dataTask.cancel()
     }
 
-    func append(
-        _ task: SessionDataTask,
-        url: URL,
-        callback: SessionDataTask.TaskCallback) -> DownloadTask
-    {
+    func append(_ task: SessionDataTask, url: URL, callback: SessionDataTask.TaskCallback) -> DownloadTask {
         let token = task.addCallback(callback)
         return DownloadTask(sessionTask: task, cancelToken: token)
     }
@@ -101,26 +63,16 @@ class SessionDelegate: NSObject {
     private func remove(_ task: SessionDataTask) {
         lock.lock()
         defer { lock.unlock() }
-
-        guard let url = task.originalURL else {
-            return
-        }
+        guard let url = task.originalURL else { return }
         tasks[url] = nil
     }
 
     private func task(for task: URLSessionTask) -> SessionDataTask? {
         lock.lock()
         defer { lock.unlock() }
-
-        guard let url = task.originalRequest?.url else {
-            return nil
-        }
-        guard let sessionTask = tasks[url] else {
-            return nil
-        }
-        guard sessionTask.task.taskIdentifier == task.taskIdentifier else {
-            return nil
-        }
+        guard let url = task.originalRequest?.url else { return nil }
+        guard let sessionTask = tasks[url] else { return nil }
+        guard sessionTask.task.taskIdentifier == task.taskIdentifier else { return nil }
         return sessionTask
     }
 
@@ -146,22 +98,16 @@ class SessionDelegate: NSObject {
         task?.forceCancel()
     }
 }
-
+// MARK: - URLSessionDataDelegate 下载数据的代理
 extension SessionDelegate: URLSessionDataDelegate {
-
-    func urlSession(
-        _ session: URLSession,
-        dataTask: URLSessionDataTask,
-        didReceive response: URLResponse,
-        completionHandler: @escaping (URLSession.ResponseDisposition) -> Void)
-    {
+    //收到了相应头
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         guard let httpResponse = response as? HTTPURLResponse else {
             let error = KingfisherError.responseError(reason: .invalidURLResponse(response: response))
             onCompleted(task: dataTask, result: .failure(error))
             completionHandler(.cancel)
             return
         }
-
         let httpStatusCode = httpResponse.statusCode
         guard onValidStatusCode.call(httpStatusCode) == true else {
             let error = KingfisherError.responseError(reason: .invalidHTTPStatusCode(response: httpResponse))
@@ -171,24 +117,19 @@ extension SessionDelegate: URLSessionDataDelegate {
         }
         completionHandler(.allow)
     }
-
+    // 开始接收到数据
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        guard let task = self.task(for: dataTask) else {
-            return
-        }
-        
+        guard let task = self.task(for: dataTask) else { return }
         task.didReceiveData(data)
-        
         task.callbacks.forEach { callback in
             callback.options.onDataReceived?.forEach { sideEffect in
                 sideEffect.onDataReceived(session, task: task, data: data)
             }
         }
     }
-
+    // 当task完成的时候调用
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let sessionTask = self.task(for: task) else { return }
-
         if let url = sessionTask.originalURL {
             let result: Result<URLResponse, KingfisherError>
             if let error = error {
@@ -200,7 +141,6 @@ extension SessionDelegate: URLSessionDataDelegate {
             }
             onDownloadingFinished.call((url, result))
         }
-
         let result: Result<(Data, URLResponse?), KingfisherError>
         if let error = error {
             result = .failure(KingfisherError.responseError(reason: .URLSessionError(error: error)))
@@ -213,49 +153,28 @@ extension SessionDelegate: URLSessionDataDelegate {
         }
         onCompleted(task: task, result: result)
     }
-
-    func urlSession(
-        _ session: URLSession,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
-    {
+    //如果服务器要求验证客户端身份或向客户端提供其证书用于验证时，则会调用
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         onReceiveSessionChallenge.call((session, challenge, completionHandler))
     }
-
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
-    {
+    //响应来自远程服务器的认证请求，从代理请求凭证
+    func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         onReceiveSessionTaskChallenge.call((session, task, challenge, completionHandler))
     }
-    
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        willPerformHTTPRedirection response: HTTPURLResponse,
-        newRequest request: URLRequest,
-        completionHandler: @escaping (URLRequest?) -> Void)
-    {
+    //告诉委托远程服务器请求HTTP重定向
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         guard let sessionDataTask = self.task(for: task),
-              let redirectHandler = Array(sessionDataTask.callbacks).last?.options.redirectHandler else
-        {
+              let redirectHandler = Array(sessionDataTask.callbacks).last?.options.redirectHandler else {
             completionHandler(request)
             return
         }
-        
-        redirectHandler.handleHTTPRedirection(
-            for: sessionDataTask,
-            response: response,
-            newRequest: request,
-            completionHandler: completionHandler)
+        redirectHandler.handleHTTPRedirection(for: sessionDataTask,response: response, newRequest: request, completionHandler: completionHandler)
     }
 
     private func onCompleted(task: URLSessionTask, result: Result<(Data, URLResponse?), KingfisherError>) {
-        guard let sessionTask = self.task(for: task) else {
-            return
-        }
+        guard let sessionTask = self.task(for: task) else { return }
         remove(sessionTask)
         sessionTask.onTaskDone.call((result, sessionTask.callbacks))
     }

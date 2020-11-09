@@ -1,28 +1,3 @@
-//
-//  ImageDownloader.swift
-//  Kingfisher
-//
-//  Created by Wei Wang on 15/4/6.
-//
-//  Copyright (c) 2019 Wei Wang <onevcat@gmail.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
 
 #if os(macOS)
 import AppKit
@@ -30,45 +5,17 @@ import AppKit
 import UIKit
 #endif
 
-/// Represents a success result of an image downloading progress.
+/// 下载结果
 public struct ImageLoadingResult {
-
-    /// The downloaded image.
     public let image: KFCrossPlatformImage
-
-    /// Original URL of the image request.
     public let url: URL?
-
-    /// The raw data received from downloader.
     public let originalData: Data
 }
 
-/// Represents a task of an image downloading process.
 public struct DownloadTask {
-
-    /// The `SessionDataTask` object bounded to this download task. Multiple `DownloadTask`s could refer
-    /// to a same `sessionTask`. This is an optimization in Kingfisher to prevent multiple downloading task
-    /// for the same URL resource at the same time.
-    ///
-    /// When you `cancel` a `DownloadTask`, this `SessionDataTask` and its cancel token will be pass through.
-    /// You can use them to identify the cancelled task.
     public let sessionTask: SessionDataTask
-
-    /// The cancel token which is used to cancel the task. This is only for identify the task when it is cancelled.
-    /// To cancel a `DownloadTask`, use `cancel` instead.
     public let cancelToken: SessionDataTask.CancelToken
 
-    /// Cancel this task if it is running. It will do nothing if this task is not running.
-    ///
-    /// - Note:
-    /// In Kingfisher, there is an optimization to prevent starting another download task if the target URL is being
-    /// downloading. However, even when internally no new session task created, a `DownloadTask` will be still created
-    /// and returned when you call related methods, but it will share the session downloading task with a previous task.
-    /// In this case, if multiple `DownloadTask`s share a single session download task, cancelling a `DownloadTask`
-    /// does not affect other `DownloadTask`s.
-    ///
-    /// If you need to cancel all `DownloadTask`s of a url, use `ImageDownloader.cancel(url:)`. If you need to cancel
-    /// all downloading tasks of an `ImageDownloader`, use `ImageDownloader.cancelAll()`.
     public func cancel() {
         sessionTask.cancel(token: cancelToken)
     }
@@ -95,70 +42,37 @@ extension DownloadTask {
     }
 }
 
-/// Represents a downloading manager for requesting the image with a URL from server.
+/// 下载器
 open class ImageDownloader {
 
-    // MARK: Singleton
-    /// The default downloader.
     public static let `default` = ImageDownloader(name: "default")
 
-    // MARK: Public Properties
-    /// The duration before the downloading is timeout. Default is 15 seconds.
     open var downloadTimeout: TimeInterval = 15.0
-    
-    /// A set of trusted hosts when receiving server trust challenges. A challenge with host name contained in this
-    /// set will be ignored. You can use this set to specify the self-signed site. It only will be used if you don't
-    /// specify the `authenticationChallengeResponder`.
-    ///
-    /// If `authenticationChallengeResponder` is set, this property will be ignored and the implementation of
-    /// `authenticationChallengeResponder` will be used instead.
-    open var trustedHosts: Set<String>?
-    
-    /// Use this to set supply a configuration for the downloader. By default,
-    /// NSURLSessionConfiguration.ephemeralSessionConfiguration() will be used.
-    ///
-    /// You could change the configuration before a downloading task starts.
-    /// A configuration without persistent storage for caches is requested for downloader working correctly.
-    open var sessionConfiguration = URLSessionConfiguration.ephemeral {
-        didSet {
-            session.invalidateAndCancel()
-            session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
-        }
-    }
-    
-    /// Whether the download requests should use pipeline or not. Default is false.
-    open var requestsUsePipelining = false
+    open var trustedHosts: Set<String>? //信任的请求地址，和自己实现请求代理设置冲突，二选一
 
-    /// Delegate of this `ImageDownloader` object. See `ImageDownloaderDelegate` protocol for more.
-    open weak var delegate: ImageDownloaderDelegate?
-    
-    /// A responder for authentication challenge. 
-    /// Downloader will forward the received authentication challenge for the downloading session to this responder.
+    open var requestsUsePipelining = false //是否按顺序下载，第一个下载完成在下载下张图片
+    open weak var delegate: ImageDownloaderDelegate?  // \\下信任请求代理，和trustedHosts冲突二选一
     open weak var authenticationChallengeResponder: AuthenticationChallengeResponsable?
 
     private let name: String
     private let sessionDelegate: SessionDelegate
     private var session: URLSession
 
-    // MARK: Initializers
+    open var sessionConfiguration = URLSessionConfiguration.ephemeral {
+        didSet {
+            session.invalidateAndCancel()
+            session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
+        }
+    }
 
-    /// Creates a downloader with name.
-    ///
-    /// - Parameter name: The name for the downloader. It should not be empty.
     public init(name: String) {
         if name.isEmpty {
             fatalError("[Kingfisher] You should specify a name for the downloader. "
                 + "A downloader with empty name is not permitted.")
         }
-
         self.name = name
-
         sessionDelegate = SessionDelegate()
-        session = URLSession(
-            configuration: sessionConfiguration,
-            delegate: sessionDelegate,
-            delegateQueue: nil)
-
+        session = URLSession(configuration: sessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
         authenticationChallengeResponder = self
         setupSessionHandler()
     }
@@ -193,27 +107,12 @@ open class ImageDownloader {
         }
     }
 
-    // MARK: Dowloading Task
-    /// Downloads an image with a URL and option. Invoked internally by Kingfisher. Subclasses must invoke super.
-    ///
-    /// - Parameters:
-    ///   - url: Target URL.
-    ///   - options: The options could control download behavior. See `KingfisherOptionsInfo`.
-    ///   - completionHandler: Called when the download progress finishes. This block will be called in the queue
-    ///                        defined in `.callbackQueue` in `options` parameter.
-    /// - Returns: A downloading task. You could call `cancel` on it to stop the download task.
     @discardableResult
-    open func downloadImage(
-        with url: URL,
-        options: KingfisherParsedOptionsInfo,
-        completionHandler: ((Result<ImageLoadingResult, KingfisherError>) -> Void)? = nil) -> DownloadTask?
-    {
-        // Creates default request.
+    open func downloadImage(with url: URL, options: KingfisherParsedOptionsInfo, completionHandler: ((Result<ImageLoadingResult, KingfisherError>) -> Void)? = nil) -> DownloadTask? {
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: downloadTimeout)
         request.httpShouldUsePipelining = requestsUsePipelining
 
-        if let requestModifier = options.requestModifier {
-            // Modifies request before sending.
+        if let requestModifier = options.requestModifier { // 请求头自定义参数验签
             guard let r = requestModifier.modified(for: request) else {
                 options.callbackQueue.execute {
                     completionHandler?(.failure(KingfisherError.requestError(reason: .emptyRequest)))
@@ -222,35 +121,25 @@ open class ImageDownloader {
             }
             request = r
         }
-        
-        // There is a possibility that request modifier changed the url to `nil` or empty.
-        // In this case, throw an error.
-        guard let url = request.url, !url.absoluteString.isEmpty else {
+
+        guard let url = request.url, !url.absoluteString.isEmpty else { // url 判空
             options.callbackQueue.execute {
                 completionHandler?(.failure(KingfisherError.requestError(reason: .invalidURL(request: request))))
             }
             return nil
         }
 
-        // Wraps `completionHandler` to `onCompleted` respectively.
-
-        let onCompleted = completionHandler.map {
-            block -> Delegate<Result<ImageLoadingResult, KingfisherError>, Void> in
+        // 把 completionHandler 包装成 onCompleted
+        let onCompleted = completionHandler.map { (block) -> Delegate<Result<ImageLoadingResult, KingfisherError>, Void> in
             let delegate =  Delegate<Result<ImageLoadingResult, KingfisherError>, Void>()
             delegate.delegate(on: self) { (_, callback) in
                 block(callback)
             }
             return delegate
         }
+        let callback = SessionDataTask.TaskCallback(onCompleted: onCompleted, options: options)
 
-        // SessionDataTask.TaskCallback is a wrapper for `onCompleted` and `options` (for processor info)
-        let callback = SessionDataTask.TaskCallback(
-            onCompleted: onCompleted,
-            options: options
-        )
-
-        // Ready to start download. Add it to session task manager (`sessionHandler`)
-
+        // 开始下载, 让 session task的sessionHandler 去管理
         let downloadTask: DownloadTask
         if let existingTask = sessionDelegate.task(for: url) {
             downloadTask = sessionDelegate.append(existingTask, url: url, callback: callback)
@@ -262,8 +151,7 @@ open class ImageDownloader {
 
         let sessionTask = downloadTask.sessionTask
 
-        // Start the session task if not started yet.
-        if !sessionTask.started {
+        if !sessionTask.started { // 未开始
             sessionTask.onTaskDone.delegate(on: self) { (self, done) in
                 // Underlying downloading finishes.
                 // result: Result<(Data, URLResponse?)>, callbacks: [TaskCallback]
@@ -321,57 +209,27 @@ open class ImageDownloader {
         return downloadTask
     }
 
-    /// Downloads an image with a URL and option.
-    ///
-    /// - Parameters:
-    ///   - url: Target URL.
-    ///   - options: The options could control download behavior. See `KingfisherOptionsInfo`.
-    ///   - progressBlock: Called when the download progress updated. This block will be always be called in main queue.
-    ///   - completionHandler: Called when the download progress finishes. This block will be called in the queue
-    ///                        defined in `.callbackQueue` in `options` parameter.
-    /// - Returns: A downloading task. You could call `cancel` on it to stop the download task.
     @discardableResult
-    open func downloadImage(
-        with url: URL,
-        options: KingfisherOptionsInfo? = nil,
-        progressBlock: DownloadProgressBlock? = nil,
-        completionHandler: ((Result<ImageLoadingResult, KingfisherError>) -> Void)? = nil) -> DownloadTask?
-    {
+    open func downloadImage(with url: URL, options: KingfisherOptionsInfo? = nil, progressBlock: DownloadProgressBlock? = nil, completionHandler: ((Result<ImageLoadingResult, KingfisherError>) -> Void)? = nil) -> DownloadTask? {
         var info = KingfisherParsedOptionsInfo(options)
         if let block = progressBlock {
             info.onDataReceived = (info.onDataReceived ?? []) + [ImageLoadingProgressSideEffect(block)]
         }
-        return downloadImage(
-            with: url,
-            options: info,
-            completionHandler: completionHandler)
+        return downloadImage(with: url, options: info, completionHandler: completionHandler)
     }
 }
 
-// MARK: Cancelling Task
+// MARK: 取消 Task
 extension ImageDownloader {
 
-    /// Cancel all downloading tasks for this `ImageDownloader`. It will trigger the completion handlers
-    /// for all not-yet-finished downloading tasks.
-    ///
-    /// If you need to only cancel a certain task, call `cancel()` on the `DownloadTask`
-    /// returned by the downloading methods. If you need to cancel all `DownloadTask`s of a certain url,
-    /// use `ImageDownloader.cancel(url:)`.
     public func cancelAll() {
         sessionDelegate.cancelAll()
     }
 
-    /// Cancel all downloading tasks for a given URL. It will trigger the completion handlers for
-    /// all not-yet-finished downloading tasks for the URL.
-    ///
-    /// - Parameter url: The URL which you want to cancel downloading.
     public func cancel(url: URL) {
         sessionDelegate.cancel(url: url)
     }
 }
-
-// Use the default implementation from extension of `AuthenticationChallengeResponsable`.
+// MARK: 准守协议
 extension ImageDownloader: AuthenticationChallengeResponsable {}
-
-// Use the default implementation from extension of `ImageDownloaderDelegate`.
 extension ImageDownloader: ImageDownloaderDelegate {}

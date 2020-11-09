@@ -23,8 +23,6 @@ public enum KingfisherOptionsInfoItem {
     case waitForCache
     case onlyFromCache
     case backgroundDecode
-    @available(*, deprecated, message: "Use `.callbackQueue(CallbackQueue)` instead.")
-    case callbackDispatchQueue(DispatchQueue?)
     case callbackQueue(CallbackQueue)
     case scaleFactor(CGFloat)
     case preloadAllAnimationData
@@ -118,7 +116,6 @@ public struct KingfisherParsedOptionsInfo {
             case .onFailureImage(let value): onFailureImage = .some(value)
             case .alsoPrefetchToMemory: alsoPrefetchToMemory = true
             case .loadDiskFileSynchronously: loadDiskFileSynchronously = true
-            case .callbackDispatchQueue(let value): callbackQueue = value.map { .dispatch($0) } ?? .mainCurrentOrAsync
             case .memoryCacheExpiration(let expiration): memoryCacheExpiration = expiration
             case .memoryCacheAccessExtendingExpiration(let expirationExtending): memoryCacheAccessExtendingExpiration = expirationExtending
             case .diskCacheExpiration(let expiration): diskCacheExpiration = expiration
@@ -164,12 +161,9 @@ class ImageLoadingProgressSideEffect: DataReceivingSideEffect {
     func onDataReceived(_ session: URLSession, task: SessionDataTask, data: Data) {
         DispatchQueue.main.async {
             guard self.onShouldApply() else { return }
-            guard let expectedContentLength = task.task.response?.expectedContentLength,
-                      expectedContentLength != -1 else
-            {
+            guard let expectedContentLength = task.task.response?.expectedContentLength, expectedContentLength != -1 else {
                 return
             }
-
             let dataLength = Int64(task.mutableData.count)
             self.block(dataLength, expectedContentLength)
         }

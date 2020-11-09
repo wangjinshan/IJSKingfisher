@@ -152,8 +152,7 @@ public class KingfisherManager {
             }
         }
 
-        return retrieveImage(with: source, context: retrievingContext) {
-            result in
+        return retrieveImage(with: source, context: retrievingContext) { result in
             handler(currentSource: source, result: result)
         }
     }
@@ -216,8 +215,7 @@ public class KingfisherManager {
                             options: KingfisherParsedOptionsInfo,
                             context: RetrievingContext,
                             result: Result<ImageLoadingResult, KingfisherError>,
-                            completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?
-    ) {
+                            completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) {
         switch result {
         case .success(let value):
             let needToCacheOriginalImage = options.cacheOriginalImage &&
@@ -231,8 +229,7 @@ public class KingfisherManager {
                 original: value.originalData,
                 forKey: source.cacheKey,
                 options: options,
-                toDisk: !options.cacheMemoryOnly)
-            {
+                toDisk: !options.cacheMemoryOnly) {
                 _ in
                 coordinator.apply(.cachingImage) {
                     let result = RetrieveImageResult(
@@ -289,28 +286,12 @@ public class KingfisherManager {
                            completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) -> DownloadTask.WrappedTask? {
         let options = context.options
         func _cacheImage(_ result: Result<ImageLoadingResult, KingfisherError>) {
-            cacheImage(
-                source: source,
-                options: options,
-                context: context,
-                result: result,
-                completionHandler: completionHandler
-            )
+            cacheImage(source: source, options: options, context: context, result: result, completionHandler: completionHandler)
         }
         switch source {
             case .network(let resource):
             let downloader = options.downloader ?? self.downloader
-            let task = downloader.downloadImage(
-                with: resource.downloadURL, options: options, completionHandler: _cacheImage
-            )
-            // The code below is neat, but it fails the Swift 5.2 compiler with a runtime crash when 
-            // `BUILD_LIBRARY_FOR_DISTRIBUTION` is turned on. I believe it is a bug in the compiler. 
-            // Let's fallback to a traditional style before it can be fixed in Swift.
-            //
-            // https://github.com/onevcat/Kingfisher/issues/1436
-            //
-            // return task.map(DownloadTask.WrappedTask.download)
-
+            let task = downloader.downloadImage(with: resource.downloadURL, options: options, completionHandler: _cacheImage)
             if let task = task {
                 return .download(task)
             } else {
@@ -364,16 +345,14 @@ public class KingfisherManager {
             return true
         }
 
-        // 2. Check whether the original image exists. If so, get it, process it, save to storage and return.
+        // 2. 判断原始的图片是否已经缓存，如果存在缓存图片，那么直接返回, 不需要重复缓存
         let originalCache = options.originalCache ?? targetCache
-        // No need to store the same file in the same cache again.
         if originalCache === targetCache && options.processor == DefaultImageProcessor.default {
             return false
         }
 
-        // Check whether the unprocessed image existing or not.
-        let originalImageCacheType = originalCache.imageCachedType(
-            forKey: key, processorIdentifier: DefaultImageProcessor.default.identifier)
+        // 检查是否存在未处理的图片
+        let originalImageCacheType = originalCache.imageCachedType(forKey: key, processorIdentifier: DefaultImageProcessor.default.identifier)
         let canAcceptDiskCache = !options.fromMemoryCacheOrRefresh
         
         let canUseOriginalImageCache =
@@ -381,12 +360,10 @@ public class KingfisherManager {
             (!canAcceptDiskCache && originalImageCacheType == .memory)
         
         if canUseOriginalImageCache {
-            // Now we are ready to get found the original image from cache. We need the unprocessed image, so remove
-            // any processor from options first.
+            // 找到缓存的图片，处理为原始的数据
             var optionsWithoutProcessor = options
             optionsWithoutProcessor.processor = DefaultImageProcessor.default
             originalCache.retrieveImage(forKey: key, options: optionsWithoutProcessor) { result in
-
                 result.match(
                     onSuccess: { cacheResult in
                         guard let image = cacheResult.image else {
@@ -410,12 +387,7 @@ public class KingfisherManager {
                             let coordinator = CacheCallbackCoordinator(
                                 shouldWaitForCache: options.waitForCache, shouldCacheOriginal: false)
 
-                            targetCache.store(
-                                processedImage,
-                                forKey: key,
-                                options: cacheOptions,
-                                toDisk: !options.cacheMemoryOnly)
-                            {
+                            targetCache.store(processedImage, forKey: key, options: cacheOptions, toDisk: !options.cacheMemoryOnly) {
                                 _ in
                                 coordinator.apply(.cachingImage) {
                                     let value = RetrieveImageResult(
@@ -429,19 +401,12 @@ public class KingfisherManager {
                             }
 
                             coordinator.apply(.cacheInitiated) {
-                                let value = RetrieveImageResult(
-                                    image: processedImage,
-                                    cacheType: .none,
-                                    source: source,
-                                    originalSource: context.originalSource
-                                )
+                                let value = RetrieveImageResult(image: processedImage, cacheType: .none, source: source, originalSource: context.originalSource)
                                 options.callbackQueue.execute { completionHandler?(.success(value)) }
                             }
                         }
                     },
                     onFailure: { _ in
-                        // This should not happen actually, since we already confirmed `originalImageCached` is `true`.
-                        // Just in case...
                         options.callbackQueue.execute {
                             completionHandler?(
                                 .failure(KingfisherError.cacheError(reason: .imageNotExisting(key: key)))
@@ -452,7 +417,6 @@ public class KingfisherManager {
             }
             return true
         }
-
         return false
     }
 }

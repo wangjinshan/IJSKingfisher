@@ -31,70 +31,16 @@ import CoreGraphics
 import AppKit
 #endif
 
-/// Represents an item which could be processed by an `ImageProcessor`.
-///
-/// - image: Input image. The processor should provide a way to apply
-///          processing on this `image` and return the result image.
-/// - data:  Input data. The processor should provide a way to apply
-///          processing on this `image` and return the result image.
+/// 原始数据
 public enum ImageProcessItem {
-    
-    /// Input image. The processor should provide a way to apply
-    /// processing on this `image` and return the result image.
-    case image(KFCrossPlatformImage)
-    
-    /// Input data. The processor should provide a way to apply
-    /// processing on this `image` and return the result image.
-    case data(Data)
+    case image(KFCrossPlatformImage)  // 输入,输出头像
+    case data(Data) // 源数据输入输出
 }
 
-/// An `ImageProcessor` would be used to convert some downloaded data to an image.
+/// 定义了对原始数据进行加工处理转换成UIImage的能力
 public protocol ImageProcessor {
-    /// Identifier of the processor. It will be used to identify the processor when 
-    /// caching and retrieving an image. You might want to make sure that processors with
-    /// same properties/functionality have the same identifiers, so correct processed images
-    /// could be retrieved with proper key.
-    /// 
-    /// - Note: Do not supply an empty string for a customized processor, which is already reserved by
-    /// the `DefaultImageProcessor`. It is recommended to use a reverse domain name notation string of
-    /// your own for the identifier.
-    var identifier: String { get }
-    
-    /// Processes the input `ImageProcessItem` with this processor.
-    ///
-    /// - Parameters:
-    ///   - item: Input item which will be processed by `self`.
-    ///   - options: Options when processing the item.
-    /// - Returns: The processed image.
-    ///
-    /// - Note: The return value should be `nil` if processing failed while converting an input item to image.
-    ///         If `nil` received by the processing caller, an error will be reported and the process flow stops.
-    ///         If the processing flow is not critical for your flow, then when the input item is already an image
-    ///         (`.image` case) and there is any errors in the processing, you could return the input image itself
-    ///         to keep the processing pipeline continuing.
-    /// - Note: Most processor only supports CG-based images. watchOS is not supported for processors containing
-    ///         a filter, the input image will be returned directly on watchOS.
-    /// - Note:
-    /// This method is deprecated. Please implement the version with
-    /// `KingfisherParsedOptionsInfo` as parameter instead.
-    @available(*, deprecated,
-    message: "Deprecated. Implement the method with same name but with `KingfisherParsedOptionsInfo` instead.")
-    func process(item: ImageProcessItem, options: KingfisherOptionsInfo) -> KFCrossPlatformImage?
-
-    /// Processes the input `ImageProcessItem` with this processor.
-    ///
-    /// - Parameters:
-    ///   - item: Input item which will be processed by `self`.
-    ///   - options: The parsed options when processing the item.
-    /// - Returns: The processed image.
-    ///
-    /// - Note: The return value should be `nil` if processing failed while converting an input item to image.
-    ///         If `nil` received by the processing caller, an error will be reported and the process flow stops.
-    ///         If the processing flow is not critical for your flow, then when the input item is already an image
-    ///         (`.image` case) and there is any errors in the processing, you could return the input image itself
-    ///         to keep the processing pipeline continuing.
-    /// - Note: Most processor only supports CG-based images. watchOS is not supported for processors containing
-    ///         a filter, the input image will be returned directly on watchOS.
+    var identifier: String { get }  // 标识符，在缓存的时候用到，用于区分原始数据和处理加工之后的数据的
+    // 交给具体的实现类去实现，ImageProcessItem，最终返回一个UIImage
     func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage?
 }
 
@@ -105,14 +51,7 @@ extension ImageProcessor {
 }
 
 extension ImageProcessor {
-    
-    /// Appends an `ImageProcessor` to another. The identifier of the new `ImageProcessor`
-    /// will be "\(self.identifier)|>\(another.identifier)".
-    ///
-    /// - Parameter another: An `ImageProcessor` you want to append to `self`.
-    /// - Returns: The new `ImageProcessor` will process the image in the order
-    ///            of the two processors concatenated.
-    public func append(another: ImageProcessor) -> ImageProcessor {
+    public func append(another: ImageProcessor) -> ImageProcessor { // newIdentifier = "\(self.identifier)|>\(another.identifier)".
         let newIdentifier = identifier.appending("|>\(another.identifier)")
         return GeneralProcessor(identifier: newIdentifier) {
             item, options in

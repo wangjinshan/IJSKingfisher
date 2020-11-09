@@ -52,7 +52,9 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
             $0.onShouldApply = { issuedIdentifier == self.taskIdentifier }
         }
 
-        let task = KingfisherManager.shared.retrieveImage(with: source, options: options, downloadTaskUpdated: { mutatingSelf.imageTask = $0 }, completionHandler: { result in
+        let task = KingfisherManager.shared.retrieveImage(with: source, options: options, downloadTaskUpdated: {
+            mutatingSelf.imageTask = $0
+        }, completionHandler: { result in
             CallbackQueue.mainCurrentOrAsync.execute {
                 maybeIndicator?.stopAnimatingView()
                 guard issuedIdentifier == self.taskIdentifier else {
@@ -72,23 +74,23 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
                 mutatingSelf.taskIdentifier = nil
 
                 switch result {
-                    case .success(let value):
-                            guard self.needsTransition(options: options, cacheType: value.cacheType) else {
-                                mutatingSelf.placeholder = nil
-                                self.base.image = value.image
-                                completionHandler?(result)
-                                return
-                            }
-                            self.makeTransition(image: value.image, transition: options.transition) {
-                                completionHandler?(result)
-                            }
-                        case .failure:
-                            if let image = options.onFailureImage {
-                                self.base.image = image
-                            }
-                            completionHandler?(result)
+                case .success(let value):
+                    guard self.needsTransition(options: options, cacheType: value.cacheType) else {
+                        mutatingSelf.placeholder = nil
+                        self.base.image = value.image
+                        completionHandler?(result)
+                        return
                     }
+                    self.makeTransition(image: value.image, transition: options.transition) {
+                        completionHandler?(result)
+                    }
+                case .failure:
+                    if let image = options.onFailureImage {
+                        self.base.image = image
+                    }
+                    completionHandler?(result)
                 }
+            }
             }
         )
         mutatingSelf.imageTask = task
@@ -188,13 +190,10 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
         }
     }
 
-    /// Holds which indicator type is going to be used.
-    /// Default is `.none`, means no indicator will be shown while downloading.
     public var indicatorType: IndicatorType {
         get {
             return getAssociatedObject(base, &indicatorTypeKey) ?? .none
         }
-        
         set {
             switch newValue {
                 case .none: indicator = nil
@@ -202,7 +201,6 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
                 case .image(let data): indicator = ImageIndicator(imageData: data)
                 case .custom(let anIndicator): indicator = anIndicator
             }
-
             setRetainedAssociatedObject(base, &indicatorTypeKey, newValue)
         }
     }
@@ -212,7 +210,6 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
             let box: Box<Indicator>? = getAssociatedObject(base, &indicatorKey)
             return box?.value
         }
-        
         set {
             if let previousIndicator = indicator { //移除
                 previousIndicator.view.removeFromSuperview()
@@ -236,10 +233,8 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
                         view.heightAnchor.constraint(equalToConstant: size.height).isActive = true
                         view.widthAnchor.constraint(equalToConstant: size.width).isActive = true
                 }
-                
                 newIndicator.view.isHidden = true
             }
-
             // Save in associated object
             // Wrap newValue with Box to workaround an issue that Swift does not recognize
             // and casting protocol for associate object correctly. https://github.com/onevcat/Kingfisher/issues/872
@@ -252,8 +247,6 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
         set { setRetainedAssociatedObject(base, &imageTaskKey, newValue)}
     }
 
-    /// Represents the `Placeholder` used for this image view. A `Placeholder` will be shown in the view while
-    /// it is downloading an image.
     public private(set) var placeholder: Placeholder? {
         get { return getAssociatedObject(base, &placeholderKey) }
         set {
@@ -271,18 +264,8 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
     }
 }
 
-
 extension KFCrossPlatformImageView {
     @objc func shouldPreloadAllAnimation() -> Bool { return true }
-}
-
-extension KingfisherWrapper where Base: KFCrossPlatformImageView {
-    /// Gets the image URL bound to this image view.
-    @available(*, deprecated, message: "Use `taskIdentifier` instead to identify a setting task.")
-    public private(set) var webURL: URL? {
-        get { return nil }
-        set { }
-    }
 }
 
 #endif

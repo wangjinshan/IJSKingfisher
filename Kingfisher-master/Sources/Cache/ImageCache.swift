@@ -12,6 +12,7 @@ extension Notification.Name {
 
 public let KingfisherDiskCacheCleanedHashKey = "com.onevcat.Kingfisher.cleanedHash"
 
+/// 缓存的类型
 public enum CacheType {
     case none
     case memory
@@ -287,11 +288,7 @@ open class ImageCache {
         }
     }
 
-    func retrieveImage(forKey key: String,
-                       options: KingfisherParsedOptionsInfo,
-                       callbackQueue: CallbackQueue = .mainCurrentOrAsync,
-                       completionHandler: ((Result<ImageCacheResult, KingfisherError>) -> Void)?)
-    {
+    func retrieveImage(forKey key: String, options: KingfisherParsedOptionsInfo, callbackQueue: CallbackQueue = .mainCurrentOrAsync, completionHandler: ((Result<ImageCacheResult, KingfisherError>) -> Void)?) {
         // No completion handler. No need to start working and early return.
         guard let completionHandler = completionHandler else { return }
 
@@ -486,27 +483,18 @@ open class ImageCache {
     }
 #endif
 
-    open func imageCachedType(
-        forKey key: String,
-        processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> CacheType
-    {
+    open func imageCachedType(forKey key: String, processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> CacheType {
         let computedKey = key.computedKey(with: identifier)
         if memoryStorage.isCached(forKey: computedKey) { return .memory }
         if diskStorage.isCached(forKey: computedKey) { return .disk }
         return .none
     }
 
-    public func isCached(
-        forKey key: String,
-        processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> Bool
-    {
+    public func isCached(forKey key: String, processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> Bool {
         return imageCachedType(forKey: key, processorIdentifier: identifier).cached
     }
 
-    open func hash(
-        forKey key: String,
-        processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> String
-    {
+    open func hash(forKey key: String, processorIdentifier identifier: String = DefaultImageProcessor.default.identifier) -> String {
         let computedKey = key.computedKey(with: identifier)
         return diskStorage.cacheFileName(forKey: computedKey)
     }

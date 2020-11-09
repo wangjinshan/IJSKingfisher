@@ -37,7 +37,13 @@ extension IJSKingfisherWrapper where Base: UIImageView {
 // MARK: - Result
 class IJSResult  {
     func setImage(completionHandler: ((Result<Int, KingfisherError>) -> Void)?) {
-
+        let test: IJSGrammarTest
+        if completionHandler != nil {
+            test = IJSGrammarTest()
+        } else {
+            test = IJSGrammarTest()
+        }
+        test.play()
     }
 
     private func test() {

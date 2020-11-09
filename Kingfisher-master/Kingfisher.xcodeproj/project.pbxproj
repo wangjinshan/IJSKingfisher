@@ -339,12 +339,12 @@
 				D12AB69F215D2BB50013BA68 /* ImageDownloader.swift */,
 				4BD821612189FC0C0084CC21 /* SessionDelegate.swift */,
 				4BD821662189FD330084CC21 /* SessionDataTask.swift */,
-				4B8E2916216F3F7F0095FAD1 /* ImageDownloaderDelegate.swift */,
-				4B8E291B216F40AA0095FAD1 /* AuthenticationChallengeResponsable.swift */,
 				4B10480C216F157000300C61 /* ImageDataProcessor.swift */,
 				D12AB6A0215D2BB50013BA68 /* ImageModifier.swift */,
 				D12AB6A1215D2BB50013BA68 /* ImagePrefetcher.swift */,
 				D11D9B71245FA6F700C5A0AE /* RetryStrategy.swift */,
+				4B8E2916216F3F7F0095FAD1 /* ImageDownloaderDelegate.swift */,
+				4B8E291B216F40AA0095FAD1 /* AuthenticationChallengeResponsable.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
