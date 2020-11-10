@@ -336,6 +336,13 @@
 			path = GrammarTest;
 			sourceTree = "<group>";
 		};
+		6BE06F30255A43EF00F8730F /* JSFisher */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = JSFisher;
+			sourceTree = "<group>";
+		};
 		D10EC22B1C3D62DE00A4211C /* Demo */ = {
 			isa = PBXGroup;
 			children = (
@@ -419,6 +426,7 @@
 		D1ED2D021AD2CFA600CFC3EB = {
 			isa = PBXGroup;
 			children = (
+				6BE06F30255A43EF00F8730F /* JSFisher */,
 				D16218A4238EAA67004A1C6C /* Kingfisher-Demo.entitlements */,
 				D10EC22B1C3D62DE00A4211C /* Demo */,
 				D1ED2D0C1AD2CFA600CFC3EB /* Products */,

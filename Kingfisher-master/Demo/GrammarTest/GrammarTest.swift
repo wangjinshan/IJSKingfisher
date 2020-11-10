@@ -34,23 +34,4 @@ extension IJSKingfisherWrapper where Base: UIImageView {
     }
 }
 
-// MARK: - Result
-class IJSResult  {
-    func setImage(completionHandler: ((Result<Int, KingfisherError>) -> Void)?) {
-        let test: IJSGrammarTest
-        if completionHandler != nil {
-            test = IJSGrammarTest()
-        } else {
-            test = IJSGrammarTest()
-        }
-        test.play()
-    }
 
-    private func test() {
-        setImage { (result) in
-            if case .success(let count) = result {
-                print("\(count) unread messages.")
-            }
-        }
-    }
-}
