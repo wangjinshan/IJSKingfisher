@@ -25,12 +25,13 @@ extension IJSKingfisherCompatible {
     }
 }
 
-extension UIImageView: IJSKingfisherCompatible { }
+extension UIImageView: IJSKingfisherCompatible {}
 extension UIView: IJSKingfisherCompatible { }
 
 extension IJSKingfisherWrapper where Base: UIImageView {
     public func click() {
         print("金山")
+
     }
 }
 

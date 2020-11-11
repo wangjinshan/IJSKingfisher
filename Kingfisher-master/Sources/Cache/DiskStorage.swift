@@ -1,63 +1,19 @@
-//
-//  DiskStorage.swift
-//  Kingfisher
-//
-//  Created by Wei Wang on 2018/10/15.
-//
-//  Copyright (c) 2019 Wei Wang <onevcat@gmail.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
 
 import Foundation
 
-
-/// Represents a set of conception related to storage which stores a certain type of value in disk.
-/// This is a namespace for the disk storage types. A `Backend` with a certain `Config` will be used to describe the
-/// storage. See these composed types for more information.
+/// 磁盘存储
 public enum DiskStorage {
 
-    /// Represents a storage back-end for the `DiskStorage`. The value is serialized to data
-    /// and stored as file in the file system under a specified location.
-    ///
-    /// You can config a `DiskStorage.Backend` in its initializer by passing a `DiskStorage.Config` value.
-    /// or modifying the `config` property after it being created. `DiskStorage` will use file's attributes to keep
-    /// track of a file for its expiration or size limitation.
     public class Backend<T: DataTransformable> {
-        /// The config used for this disk storage.
         public var config: Config
-
-        // The final storage URL on disk, with `name` and `cachePathBlock` considered.
-        public let directoryURL: URL
-
-        let metaChangingQueue: DispatchQueue
+        public let directoryURL: URL  //写入文件所在的文件夹，默认在cache文件夹里
+        let metaChangingQueue: DispatchQueue  //修改文件原信息时，所在的队列
 
         var maybeCached : Set<String>?
         let maybeCachedCheckingQueue = DispatchQueue(label: "com.onevcat.Kingfisher.maybeCachedCheckingQueue")
 
-        /// Creates a disk storage with the given `DiskStorage.Config`.
-        ///
-        /// - Parameter config: The config used for this disk storage.
-        /// - Throws: An error if the folder for storage cannot be got or created.
         public init(config: Config) throws {
-
             self.config = config
-
             let url: URL
             if let directory = config.directory {
                 url = directory
@@ -71,11 +27,8 @@ public enum DiskStorage {
 
             let cacheName = "com.onevcat.Kingfisher.ImageCache.\(config.name)"
             directoryURL = config.cachePathBlock(url, cacheName)
-
             metaChangingQueue = DispatchQueue(label: cacheName)
-
             try prepareDirectory()
-
             maybeCachedCheckingQueue.async {
                 do {
                     self.maybeCached = Set()
@@ -90,13 +43,11 @@ public enum DiskStorage {
             }
         }
 
-        // Creates the storage folder.
+        //该方法会在init着调用，保证directoryURLs文件夹，已经被创建过了
         func prepareDirectory() throws {
             let fileManager = config.fileManager
             let path = directoryURL.path
-
             guard !fileManager.fileExists(atPath: path) else { return }
-
             do {
                 try fileManager.createDirectory(
                     atPath: path,
@@ -107,22 +58,16 @@ public enum DiskStorage {
             }
         }
 
-        func store(
-            value: T,
-            forKey key: String,
-            expiration: StorageExpiration? = nil) throws
-        {
+        func store(value: T, forKey key: String, expiration: StorageExpiration? = nil) throws {
             let expiration = expiration ?? config.expiration
             // The expiration indicates that already expired, no need to store.
             guard !expiration.isExpired else { return }
-            
             let data: Data
             do {
                 data = try value.toData()
             } catch {
                 throw KingfisherError.cacheError(reason: .cannotConvertToData(object: value, error: error))
             }
-
             let fileURL = cacheFileURL(forKey: key)
             do {
                 try data.write(to: fileURL)
@@ -131,7 +76,6 @@ public enum DiskStorage {
                     reason: .cannotCreateCacheFile(fileURL: fileURL, key: key, data: data, error: error)
                 )
             }
-
             let now = Date()
             let attributes: [FileAttributeKey : Any] = [
                 // The last access date.
@@ -161,12 +105,7 @@ public enum DiskStorage {
             return try value(forKey: key, referenceDate: Date(), actuallyLoad: true, extendingExpiration: extendingExpiration)
         }
 
-        func value(
-            forKey key: String,
-            referenceDate: Date,
-            actuallyLoad: Bool,
-            extendingExpiration: ExpirationExtending) throws -> T?
-        {
+        func value(forKey key: String, referenceDate: Date, actuallyLoad: Bool, extendingExpiration: ExpirationExtending) throws -> T? {
             let fileManager = config.fileManager
             let fileURL = cacheFileURL(forKey: key)
             let filePath = fileURL.path
@@ -174,13 +113,8 @@ public enum DiskStorage {
             let fileMaybeCached = maybeCachedCheckingQueue.sync {
                 return maybeCached?.contains(fileURL.lastPathComponent) ?? true
             }
-            guard fileMaybeCached else {
-                return nil
-            }
-            guard fileManager.fileExists(atPath: filePath) else {
-                return nil
-            }
-
+            guard fileMaybeCached else { return nil }
+            guard fileManager.fileExists(atPath: filePath) else { return nil }
             let meta: FileMeta
             do {
                 let resourceKeys: Set<URLResourceKey> = [.contentModificationDateKey, .creationDateKey]

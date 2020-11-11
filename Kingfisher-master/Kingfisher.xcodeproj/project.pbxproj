@@ -393,11 +393,11 @@
 			isa = PBXGroup;
 			children = (
 				D12AB6B6215D2BB50013BA68 /* ImageCache.swift */,
+				4B46CC5E217449C600D90C4A /* MemoryStorage.swift */,
+				4B46CC6821744AC500D90C4A /* DiskStorage.swift */,
 				D12AB6B7215D2BB50013BA68 /* CacheSerializer.swift */,
 				D12AB6B8215D2BB50013BA68 /* FormatIndicatedCacheSerializer.swift */,
 				4B46CC63217449E000D90C4A /* Storage.swift */,
-				4B46CC5E217449C600D90C4A /* MemoryStorage.swift */,
-				4B46CC6821744AC500D90C4A /* DiskStorage.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";

@@ -141,7 +141,7 @@ open class ImageCache {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // MARK: Storing Images
+    // MARK: 存储图片
     open func store(_ image: KFCrossPlatformImage,
                     original: Data? = nil,
                     forKey key: String,
@@ -166,13 +166,7 @@ open class ImageCache {
         ioQueue.async {
             let serializer = options.cacheSerializer
             if let data = serializer.data(with: image, original: original) {
-                self.syncStoreToDisk(
-                    data,
-                    forKey: key,
-                    processorIdentifier: identifier,
-                    callbackQueue: callbackQueue,
-                    expiration: options.diskCacheExpiration,
-                    completionHandler: completionHandler)
+                self.syncStoreToDisk(data, forKey: key, processorIdentifier: identifier, callbackQueue: callbackQueue, expiration: options.diskCacheExpiration, completionHandler: completionHandler)
             } else {
                 guard let completionHandler = completionHandler else { return }
                 
@@ -193,8 +187,7 @@ open class ImageCache {
                       cacheSerializer serializer: CacheSerializer = DefaultCacheSerializer.default,
                       toDisk: Bool = true,
                       callbackQueue: CallbackQueue = .untouch,
-                      completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+                      completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         struct TempProcessor: ImageProcessor {
             let identifier: String
             func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {

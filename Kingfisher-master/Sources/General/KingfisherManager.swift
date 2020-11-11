@@ -218,19 +218,11 @@ public class KingfisherManager {
                             completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) {
         switch result {
         case .success(let value):
-            let needToCacheOriginalImage = options.cacheOriginalImage &&
-                                           options.processor != DefaultImageProcessor.default
-            let coordinator = CacheCallbackCoordinator(
-                shouldWaitForCache: options.waitForCache, shouldCacheOriginal: needToCacheOriginalImage)
-            // Add image to cache.
+            let needToCacheOriginalImage = options.cacheOriginalImage && options.processor != DefaultImageProcessor.default
+            let coordinator = CacheCallbackCoordinator(shouldWaitForCache: options.waitForCache, shouldCacheOriginal: needToCacheOriginalImage)
+            // 添加图片到 cache.
             let targetCache = options.targetCache ?? self.cache
-            targetCache.store(
-                value.image,
-                original: value.originalData,
-                forKey: source.cacheKey,
-                options: options,
-                toDisk: !options.cacheMemoryOnly) {
-                _ in
+            targetCache.store(value.image, original: value.originalData, forKey: source.cacheKey, options: options, toDisk: !options.cacheMemoryOnly) { _ in
                 coordinator.apply(.cachingImage) {
                     let result = RetrieveImageResult(
                         image: value.image,
@@ -242,17 +234,10 @@ public class KingfisherManager {
                 }
             }
 
-            // Add original image to cache if necessary.
-
+            // 把原图添加到缓存
             if needToCacheOriginalImage {
                 let originalCache = options.originalCache ?? targetCache
-                originalCache.storeToDisk(
-                    value.originalData,
-                    forKey: source.cacheKey,
-                    processorIdentifier: DefaultImageProcessor.default.identifier,
-                    expiration: options.diskCacheExpiration)
-                {
-                    _ in
+                originalCache.storeToDisk(value.originalData, forKey: source.cacheKey, processorIdentifier: DefaultImageProcessor.default.identifier, expiration: options.diskCacheExpiration){ _ in
                     coordinator.apply(.cachingOriginalImage) {
                         let result = RetrieveImageResult(
                             image: value.image,
@@ -266,12 +251,7 @@ public class KingfisherManager {
             }
 
             coordinator.apply(.cacheInitiated) {
-                let result = RetrieveImageResult(
-                    image: value.image,
-                    cacheType: .none,
-                    source: source,
-                    originalSource: context.originalSource
-                )
+                let result = RetrieveImageResult(image: value.image, cacheType: .none, source: source, originalSource: context.originalSource)
                 completionHandler?(.success(result))
             }
 
@@ -450,8 +430,8 @@ class RetrievingContext {
     }
 }
 
+/// 缓存回调协作器
 class CacheCallbackCoordinator {
-
     enum State {
         case idle
         case imageCached
@@ -486,9 +466,7 @@ class CacheCallbackCoordinator {
         switch (state, action) {
         case (.done, _):
             break
-
-        // From .idle
-        case (.idle, .cacheInitiated):
+        case (.idle, .cacheInitiated): // .idle
             if !shouldWaitForCache {
                 state = .done
                 trigger()
@@ -502,14 +480,10 @@ class CacheCallbackCoordinator {
             }
         case (.idle, .cachingOriginalImage):
             state = .originalImageCached
-
-        // From .imageCached
-        case (.imageCached, .cachingOriginalImage):
+        case (.imageCached, .cachingOriginalImage): // .imageCached
             state = .done
             trigger()
-
-        // From .originalImageCached
-        case (.originalImageCached, .cachingImage):
+        case (.originalImageCached, .cachingImage): // .originalImageCached
             state = .done
             trigger()
 
