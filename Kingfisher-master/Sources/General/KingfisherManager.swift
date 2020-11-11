@@ -48,13 +48,7 @@ public class KingfisherManager {
                               progressBlock: DownloadProgressBlock? = nil,
                               downloadTaskUpdated: DownloadTaskUpdatedBlock? = nil,
                               completionHandler: ((Result<RetrieveImageResult, KingfisherError>) -> Void)?) -> DownloadTask? {
-        return retrieveImage(
-            with: resource.convertToSource(),
-            options: options,
-            progressBlock: progressBlock,
-            downloadTaskUpdated: downloadTaskUpdated,
-            completionHandler: completionHandler
-        )
+        return retrieveImage(with: resource.convertToSource(), options: options, progressBlock: progressBlock, downloadTaskUpdated: downloadTaskUpdated, completionHandler: completionHandler)
     }
 
     public func retrieveImage(with source: Source,
@@ -293,8 +287,7 @@ public class KingfisherManager {
         let key = source.cacheKey
         let targetImageCached = targetCache.imageCachedType(forKey: key, processorIdentifier: options.processor.identifier)
         
-        let validCache = targetImageCached.cached &&
-            (options.fromMemoryCacheOrRefresh == false || targetImageCached == .memory)
+        let validCache = targetImageCached.cached && (options.fromMemoryCacheOrRefresh == false || targetImageCached == .memory)
         if validCache {
             targetCache.retrieveImage(forKey: key, options: options) { result in
                 guard let completionHandler = completionHandler else { return }

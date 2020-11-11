@@ -28,8 +28,12 @@ import Foundation
 
 struct ImageLoader {
     static let sampleImageURLs: [URL] = {
-        let prefix = "https://raw.githubusercontent.com/onevcat/Kingfisher-TestImages/master/DemoAppImage/Loading"
-        return (1...10).map { URL(string: "\(prefix)/kingfisher-\($0).jpg")! }
+        let str = "https://goss3.cfp.cn/creative/vcg/800/new/VCG2173288174c-IYA.jpg"
+        var arr: [URL] = []
+        for _ in 1...10 {
+            arr.append(URL(string: str)!)
+        }
+        return arr
     }()
 
     static let highResolutionImageURLs: [URL] = {
