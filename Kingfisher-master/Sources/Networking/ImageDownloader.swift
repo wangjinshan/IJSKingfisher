@@ -143,7 +143,7 @@ open class ImageDownloader {
         let downloadTask: DownloadTask
         if let existingTask = sessionDelegate.task(for: url) {
             downloadTask = sessionDelegate.append(existingTask, url: url, callback: callback)
-        } else {
+        } else { //添加回调
             let sessionDataTask = session.dataTask(with: request)
             sessionDataTask.priority = options.downloadPriority
             downloadTask = sessionDelegate.add(sessionDataTask, url: url, callback: callback)
@@ -152,50 +152,27 @@ open class ImageDownloader {
         let sessionTask = downloadTask.sessionTask
 
         if !sessionTask.started { // 未开始
-            sessionTask.onTaskDone.delegate(on: self) { (self, done) in
-                // Underlying downloading finishes.
-                // result: Result<(Data, URLResponse?)>, callbacks: [TaskCallback]
-                let (result, callbacks) = done
-
-                // Before processing the downloaded data.
-                do {
+            sessionTask.onTaskDone.delegate(on: self) { (self, done) in // 下载完成回调 ,开始序列化数据, Data -> UIImage
+                let (result, callbacks) = done  // result: Result<(Data, URLResponse?)>, callbacks: [TaskCallback]
+                do {  // 在开始数据序列化之前
                     let value = try result.get()
-                    self.delegate?.imageDownloader(
-                        self,
-                        didFinishDownloadingImageForURL: url,
-                        with: value.1,
-                        error: nil
-                    )
+                    self.delegate?.imageDownloader(self, didFinishDownloadingImageForURL: url, with: value.1, error: nil)
                 } catch {
-                    self.delegate?.imageDownloader(
-                        self,
-                        didFinishDownloadingImageForURL: url,
-                        with: nil,
-                        error: error
-                    )
+                    self.delegate?.imageDownloader(self, didFinishDownloadingImageForURL: url, with: nil, error: error)
                 }
-
                 switch result {
-                // Download finished. Now process the data to an image.
-                case .success(let (data, response)):
-                    let processor = ImageDataProcessor(
-                        data: data, callbacks: callbacks, processingQueue: options.processingQueue)
+                case .success(let (data, response)): // 成功转换图片
+                    let processor = ImageDataProcessor(data: data, callbacks: callbacks, processingQueue: options.processingQueue)
                     processor.onImageProcessed.delegate(on: self) { (self, result) in
-                        // `onImageProcessed` will be called for `callbacks.count` times, with each
-                        // `SessionDataTask.TaskCallback` as the input parameter.
-                        // result: Result<Image>, callback: SessionDataTask.TaskCallback
                         let (result, callback) = result
-
                         if let image = try? result.get() {
                             self.delegate?.imageDownloader(self, didDownload: image, for: url, with: response)
                         }
-
                         let imageResult = result.map { ImageLoadingResult(image: $0, url: url, originalData: data) }
                         let queue = callback.options.callbackQueue
-                        queue.execute { callback.onCompleted?.call(imageResult) }
+                        queue.execute { callback.onCompleted?.call(imageResult) } //解析完成开始缓存数据
                     }
                     processor.process()
-
                 case .failure(let error):
                     callbacks.forEach { callback in
                         let queue = callback.options.callbackQueue

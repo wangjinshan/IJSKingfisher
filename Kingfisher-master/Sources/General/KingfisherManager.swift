@@ -200,11 +200,10 @@ public class KingfisherManager {
                         reason: .dataProviderError(provider: provider, error: error))
                     completionHandler(.failure(error))
                 }
-
             }
         }
     }
-
+    // MARK: - 缓存图片
     private func cacheImage(source: Source,
                             options: KingfisherParsedOptionsInfo,
                             context: RetrievingContext,
@@ -216,7 +215,7 @@ public class KingfisherManager {
             let coordinator = CacheCallbackCoordinator(shouldWaitForCache: options.waitForCache, shouldCacheOriginal: needToCacheOriginalImage)
             // 添加图片到 cache.
             let targetCache = options.targetCache ?? self.cache
-            targetCache.store(value.image, original: value.originalData, forKey: source.cacheKey, options: options, toDisk: !options.cacheMemoryOnly) { _ in
+            targetCache.store(value.image, original: value.originalData, forKey: source.cacheKey, options: options, toDisk: !options.cacheMemoryOnly) { _ in //开始缓存图片
                 coordinator.apply(.cachingImage) {
                     let result = RetrieveImageResult(
                         image: value.image,
@@ -271,7 +270,6 @@ public class KingfisherManager {
             } else {
                 return nil
             }
-
         case .provider(let provider):
             provideImage(provider: provider, options: options, completionHandler: _cacheImage)
             return .dataProviding
@@ -297,12 +295,7 @@ public class KingfisherManager {
                             let value: Result<RetrieveImageResult, KingfisherError>
                             if let image = cacheResult.image {
                                 value = result.map {
-                                    RetrieveImageResult(
-                                        image: image,
-                                        cacheType: $0.cacheType,
-                                        source: source,
-                                        originalSource: context.originalSource
-                                    )
+                                    RetrieveImageResult(image: image, cacheType: $0.cacheType, source: source, originalSource: context.originalSource)
                                 }
                             } else {
                                 value = .failure(KingfisherError.cacheError(reason: .imageNotExisting(key: key)))
@@ -423,6 +416,7 @@ class RetrievingContext {
     }
 }
 
+// MARK: - 缓存回调协作器
 /// 缓存回调协作器
 class CacheCallbackCoordinator {
     enum State {

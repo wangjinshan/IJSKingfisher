@@ -1,17 +1,14 @@
 
 import Foundation
 
-private let sharedProcessingQueue: CallbackQueue =
-    .dispatch(DispatchQueue(label: "com.onevcat.Kingfisher.ImageDownloader.Process"))
+private let sharedProcessingQueue: CallbackQueue = .dispatch(DispatchQueue(label:"com.onevcat.Kingfisher.ImageDownloader.Process"))
 
-// Handles image processing work on an own process queue.
+/// 图片数据处理器
 class ImageDataProcessor {
     let data: Data
     let callbacks: [SessionDataTask.TaskCallback]
     let queue: CallbackQueue
-
-    // Note: We have an optimization choice there, to reduce queue dispatch by checking callback
-    // queue settings in each option...
+    //通过检索回调来优化队列调度
     let onImageProcessed = Delegate<(Result<KFCrossPlatformImage, KingfisherError>, SessionDataTask.TaskCallback), Void>()
 
     init(data: Data, callbacks: [SessionDataTask.TaskCallback], processingQueue: CallbackQueue?) {

@@ -36,9 +36,7 @@ public enum DiskStorage {
                         self.maybeCached?.insert(fileName)
                     }
                 } catch {
-                    // Just disable the functionality if we fail to initialize it properly. This will just revert to
-                    // the behavior which is to check file existence on disk directly.
-                    self.maybeCached = nil
+                    self.maybeCached = nil //初始化失败直接禁用,恢复到检查文件是否存在的状态
                 }
             }
         }
@@ -57,11 +55,10 @@ public enum DiskStorage {
                 throw KingfisherError.cacheError(reason: .cannotCreateDirectory(path: path, error: error))
             }
         }
-
+        // MARK: 缓存数据到沙盒
         func store(value: T, forKey key: String, expiration: StorageExpiration? = nil) throws {
             let expiration = expiration ?? config.expiration
-            // The expiration indicates that already expired, no need to store.
-            guard !expiration.isExpired else { return }
+            guard !expiration.isExpired else { return } // 如果已经过期不需要缓存
             let data: Data
             do {
                 data = try value.toData()
@@ -72,9 +69,7 @@ public enum DiskStorage {
             do {
                 try data.write(to: fileURL)
             } catch {
-                throw KingfisherError.cacheError(
-                    reason: .cannotCreateCacheFile(fileURL: fileURL, key: key, data: data, error: error)
-                )
+                throw KingfisherError.cacheError(reason: .cannotCreateCacheFile(fileURL: fileURL, key: key, data: data, error: error))
             }
             let now = Date()
             let attributes: [FileAttributeKey : Any] = [
@@ -178,15 +173,7 @@ public enum DiskStorage {
                 try prepareDirectory()
             }
         }
-
-        /// The URL of the cached file with a given computed `key`.
-        ///
-        /// - Note:
-        /// This method does not guarantee there is an image already cached in the returned URL. It just gives your
-        /// the URL that the image should be if it exists in disk storage, with the give key.
-        ///
-        /// - Parameter key: The final computed key used when caching the image. Please note that usually this is not
-        /// the `cacheKey` of an image `Source`. It is the computed key with processor identifier considered.
+        // MARK: 文件沙盒的地址
         public func cacheFileURL(forKey key: String) -> URL {
             let fileName = cacheFileName(forKey: key)
             return directoryURL.appendingPathComponent(fileName, isDirectory: false)
@@ -300,49 +287,22 @@ public enum DiskStorage {
 }
 
 extension DiskStorage {
-    /// Represents the config used in a `DiskStorage`.
+    /// 磁盘缓存配置
     public struct Config {
-
-        /// The file size limit on disk of the storage in bytes. 0 means no limit.
         public var sizeLimit: UInt
-
-        /// The `StorageExpiration` used in this disk storage. Default is `.days(7)`,
-        /// means that the disk cache would expire in one week.
         public var expiration: StorageExpiration = .days(7)
-
-        /// The preferred extension of cache item. It will be appended to the file name as its extension.
-        /// Default is `nil`, means that the cache file does not contain a file extension.
         public var pathExtension: String? = nil
-
-        /// Default is `true`, means that the cache file name will be hashed before storing.
         public var usesHashedFileName = true
 
         let name: String
         let fileManager: FileManager
         let directory: URL?
 
-        var cachePathBlock: ((_ directory: URL, _ cacheName: String) -> URL)! = {
-            (directory, cacheName) in
+        var cachePathBlock: ((_ directory: URL, _ cacheName: String) -> URL)! = { (directory, cacheName) in
             return directory.appendingPathComponent(cacheName, isDirectory: true)
         }
 
-        /// Creates a config value based on given parameters.
-        ///
-        /// - Parameters:
-        ///   - name: The name of cache. It is used as a part of storage folder. It is used to identify the disk
-        ///           storage. Two storages with the same `name` would share the same folder in disk, and it should
-        ///           be prevented.
-        ///   - sizeLimit: The size limit in bytes for all existing files in the disk storage.
-        ///   - fileManager: The `FileManager` used to manipulate files on disk. Default is `FileManager.default`.
-        ///   - directory: The URL where the disk storage should live. The storage will use this as the root folder,
-        ///                and append a path which is constructed by input `name`. Default is `nil`, indicates that
-        ///                the cache directory under user domain mask will be used.
-        public init(
-            name: String,
-            sizeLimit: UInt,
-            fileManager: FileManager = .default,
-            directory: URL? = nil)
-        {
+        public init(name: String, sizeLimit: UInt, fileManager: FileManager = .default, directory: URL? = nil) {
             self.name = name
             self.fileManager = fileManager
             self.directory = directory
@@ -353,9 +313,7 @@ extension DiskStorage {
 
 extension DiskStorage {
     struct FileMeta {
-    
         let url: URL
-        
         let lastAccessDate: Date?
         let estimatedExpirationDate: Date?
         let isDirectory: Bool
@@ -367,21 +325,11 @@ extension DiskStorage {
         
         init(fileURL: URL, resourceKeys: Set<URLResourceKey>) throws {
             let meta = try fileURL.resourceValues(forKeys: resourceKeys)
-            self.init(
-                fileURL: fileURL,
-                lastAccessDate: meta.creationDate,
-                estimatedExpirationDate: meta.contentModificationDate,
-                isDirectory: meta.isDirectory ?? false,
-                fileSize: meta.fileSize ?? 0)
+            self.init(fileURL: fileURL, lastAccessDate: meta.creationDate, estimatedExpirationDate: meta.contentModificationDate,
+                isDirectory: meta.isDirectory ?? false, fileSize: meta.fileSize ?? 0)
         }
         
-        init(
-            fileURL: URL,
-            lastAccessDate: Date?,
-            estimatedExpirationDate: Date?,
-            isDirectory: Bool,
-            fileSize: Int)
-        {
+        init(fileURL: URL, lastAccessDate: Date?, estimatedExpirationDate: Date?, isDirectory: Bool, fileSize: Int) {
             self.url = fileURL
             self.lastAccessDate = lastAccessDate
             self.estimatedExpirationDate = estimatedExpirationDate
@@ -395,10 +343,7 @@ extension DiskStorage {
         
         func extendExpiration(with fileManager: FileManager, extendingExpiration: ExpirationExtending) {
             guard let lastAccessDate = lastAccessDate,
-                  let lastEstimatedExpiration = estimatedExpirationDate else
-            {
-                return
-            }
+                  let lastEstimatedExpiration = estimatedExpirationDate else { return }
 
             let attributes: [FileAttributeKey : Any]
 

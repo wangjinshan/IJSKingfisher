@@ -115,25 +115,18 @@ open class ImageCache {
 
     public convenience init(name: String, cacheDirectoryURL: URL?, diskCachePathClosure: DiskCachePathClosure? = nil) throws {
         if name.isEmpty {
-            fatalError("[Kingfisher] You should specify a name for the cache. A cache with empty name is not permitted.")
+            fatalError("缓存名字不能为空")
         }
-
         let totalMemory = ProcessInfo.processInfo.physicalMemory
         let costLimit = totalMemory / 4
         let memoryStorage = MemoryStorage.Backend<KFCrossPlatformImage>(config:
             .init(totalCostLimit: (costLimit > Int.max) ? Int.max : Int(costLimit)))
-
-        var diskConfig = DiskStorage.Config(
-            name: name,
-            sizeLimit: 0,
-            directory: cacheDirectoryURL
-        )
+        var diskConfig = DiskStorage.Config(name: name, sizeLimit: 0, directory: cacheDirectoryURL)
         if let closure = diskCachePathClosure {
             diskConfig.cachePathBlock = closure
         }
         let diskStorage = try DiskStorage.Backend<Data>(config: diskConfig)
         diskConfig.cachePathBlock = nil
-
         self.init(memoryStorage: memoryStorage, diskStorage: diskStorage)
     }
     
@@ -152,9 +145,8 @@ open class ImageCache {
         let callbackQueue = options.callbackQueue
         
         let computedKey = key.computedKey(with: identifier)
-        // Memory storage should not throw.
+        // 时间没有过期,图片缓存到内存
         memoryStorage.storeNoThrow(value: image, forKey: computedKey, expiration: options.memoryCacheExpiration)
-        
         guard toDisk else {
             if let completionHandler = completionHandler {
                 let result = CacheStoreResult(memoryCacheResult: .success(()), diskCacheResult: .success(()))
@@ -163,18 +155,14 @@ open class ImageCache {
             return
         }
         
-        ioQueue.async {
+        ioQueue.async { // 缓存到沙盒里面
             let serializer = options.cacheSerializer
             if let data = serializer.data(with: image, original: original) {
                 self.syncStoreToDisk(data, forKey: key, processorIdentifier: identifier, callbackQueue: callbackQueue, expiration: options.diskCacheExpiration, completionHandler: completionHandler)
             } else {
                 guard let completionHandler = completionHandler else { return }
-                
-                let diskError = KingfisherError.cacheError(
-                    reason: .cannotSerializeImage(image: image, original: original, serializer: serializer))
-                let result = CacheStoreResult(
-                    memoryCacheResult: .success(()),
-                    diskCacheResult: .failure(diskError))
+                let diskError = KingfisherError.cacheError(reason: .cannotSerializeImage(image: image, original: original, serializer: serializer))
+                let result = CacheStoreResult(memoryCacheResult: .success(()), diskCacheResult: .failure(diskError))
                 callbackQueue.execute { completionHandler(result) }
             }
         }
@@ -204,33 +192,24 @@ open class ImageCache {
               toDisk: toDisk, completionHandler: completionHandler)
     }
     
-    open func storeToDisk(
-        _ data: Data,
-        forKey key: String,
-        processorIdentifier identifier: String = "",
-        expiration: StorageExpiration? = nil,
-        callbackQueue: CallbackQueue = .untouch,
-        completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+    open func storeToDisk(_ data: Data,
+                          forKey key: String,
+                          processorIdentifier identifier: String = "",
+                          expiration: StorageExpiration? = nil,
+                          callbackQueue: CallbackQueue = .untouch,
+                          completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         ioQueue.async {
-            self.syncStoreToDisk(
-                data,
-                forKey: key,
-                processorIdentifier: identifier,
-                callbackQueue: callbackQueue,
-                expiration: expiration,
-                completionHandler: completionHandler)
+            self.syncStoreToDisk(data, forKey: key, processorIdentifier: identifier, callbackQueue: callbackQueue, expiration: expiration,
+                                 completionHandler: completionHandler)
         }
     }
-    
-    private func syncStoreToDisk(
-        _ data: Data,
-        forKey key: String,
-        processorIdentifier identifier: String = "",
-        callbackQueue: CallbackQueue = .untouch,
-        expiration: StorageExpiration? = nil,
-        completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+    // MARK: 序列化到沙盒
+    private func syncStoreToDisk(_ data: Data,
+                                 forKey key: String,
+                                 processorIdentifier identifier: String = "",
+                                 callbackQueue: CallbackQueue = .untouch,
+                                 expiration: StorageExpiration? = nil,
+                                 completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         let computedKey = key.computedKey(with: identifier)
         let result: CacheStoreResult
         do {
@@ -243,7 +222,6 @@ open class ImageCache {
             } else {
                 diskError = .cacheError(reason: .cannotConvertToData(object: data, error: error))
             }
-            
             result = CacheStoreResult(
                 memoryCacheResult: .success(()),
                 diskCacheResult: .failure(diskError)
@@ -253,7 +231,7 @@ open class ImageCache {
             callbackQueue.execute { completionHandler(result) }
         }
     }
-
+    // MARK: 移除图片
     open func removeImage(forKey key: String,
                           processorIdentifier identifier: String = "",
                           fromMemory: Bool = true,

@@ -1,6 +1,7 @@
 
 import Foundation
 
+/// 队列回调
 public enum CallbackQueue {
     case mainAsync
     case mainCurrentOrAsync

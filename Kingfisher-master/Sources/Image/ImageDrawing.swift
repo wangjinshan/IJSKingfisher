@@ -490,7 +490,7 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
         #else
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        if inverting { // If drawing a CGImage, we need to make context flipped.
+        if inverting { // 如果画一个CGImage,我们需要使上下文翻转
             context.scaleBy(x: 1.0, y: -1.0)
             context.translateBy(x: 0, y: -size.height)
         }
@@ -505,25 +505,20 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
         UIGraphicsEndImageContext()
         #endif
     }
-    
-    func draw(
-        to size: CGSize,
-        inverting: Bool = false,
-        scale: CGFloat? = nil,
-        refImage: KFCrossPlatformImage? = nil,
-        draw: (CGContext) -> Bool // Whether use the refImage (`true`) or ignore image orientation (`false`)
-    ) -> KFCrossPlatformImage
-    {
+    // MARK: 画一张图
+    func draw(to size: CGSize,
+              inverting: Bool = false,
+              scale: CGFloat? = nil,
+              refImage: KFCrossPlatformImage? = nil, // Whether use the refImage (`true`) or ignore image orientation (`false`)
+              draw: (CGContext) -> Bool) -> KFCrossPlatformImage {
         let targetScale = scale ?? self.scale
         guard let context = beginContext(size: size, scale: targetScale, inverting: inverting) else {
-            assertionFailure("[Kingfisher] Failed to create CG context for blurring image.")
+            assertionFailure("上下文创建失败")
             return base
         }
         defer { endContext() }
         let useRefImage = draw(context)
-        guard let cgImage = context.makeImage() else {
-            return base
-        }
+        guard let cgImage = context.makeImage() else { return base }
         let ref = useRefImage ? (refImage ?? base) : nil
         return KingfisherWrapper.image(cgImage: cgImage, scale: targetScale, refImage: ref)
     }

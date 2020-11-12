@@ -1,7 +1,7 @@
 
 import Foundation
 
-/// Constants for some time intervals
+/// 时间配置器
 struct TimeConstants {
     static let secondsInOneMinute = 60
     static let minutesInOneHour = 60
@@ -9,24 +9,14 @@ struct TimeConstants {
     static let secondsInOneDay = 86_400
 }
 
-/// Represents the expiration strategy used in storage.
-///
-/// - never: The item never expires.
-/// - seconds: The item expires after a time duration of given seconds from now.
-/// - days: The item expires after a time duration of given days from now.
-/// - date: The item expires after a given date.
+/// 时间过期策略
 public enum StorageExpiration {
-    /// The item never expires.
     case never
-    /// The item expires after a time duration of given seconds from now.
     case seconds(TimeInterval)
-    /// The item expires after a time duration of given days from now.
     case days(Int)
-    /// The item expires after a given date.
     case date(Date)
-    /// Indicates the item is already expired. Use this to skip cache.
-    case expired
-
+    case expired  //已经过期,跳过缓存
+    //预计到期时间
     func estimatedExpirationSince(_ date: Date) -> Date {
         switch self {
         case .never: return .distantFuture
@@ -61,26 +51,19 @@ public enum StorageExpiration {
     }
 }
 
-/// Represents the expiration extending strategy used in storage to after access.
-///
-/// - none: The item expires after the original time, without extending after access.
-/// - cacheTime: The item expiration extends by the original cache time after each access.
-/// - expirationTime: The item expiration extends by the provided time after each access.
+/// 过期时间延长策略
 public enum ExpirationExtending {
-    /// The item expires after the original time, without extending after access.
     case none
-    /// The item expiration extends by the original cache time after each access.
-    case cacheTime
-    /// The item expiration extends by the provided time after each access.
-    case expirationTime(_ expiration: StorageExpiration)
+    case cacheTime //每次访问后，项目的过期时间将延长原始缓存时间
+    case expirationTime(_ expiration: StorageExpiration) //每次访问后，项目的过期时间都会延长
 }
 
-/// Represents types which cost in memory can be calculated.
+/// 缓存个数
 public protocol CacheCostCalculable {
     var cacheCost: Int { get }
 }
 
-/// Represents types which can be converted to and from data.
+/// 数据转换
 public protocol DataTransformable {
     func toData() throws -> Data
     static func fromData(_ data: Data) throws -> Self

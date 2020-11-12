@@ -10,9 +10,7 @@ extension CGFloat {
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 import AppKit
 extension NSBezierPath {
-    convenience init(roundedRect rect: NSRect, topLeftRadius: CGFloat, topRightRadius: CGFloat,
-                     bottomLeftRadius: CGFloat, bottomRightRadius: CGFloat)
-    {
+    convenience init(roundedRect rect: NSRect, topLeftRadius: CGFloat, topRightRadius: CGFloat, bottomLeftRadius: CGFloat, bottomRightRadius: CGFloat) {
         self.init()
         
         let maxCorner = min(rect.width, rect.height) / 2
@@ -22,9 +20,7 @@ extension NSBezierPath {
         let radiusBottomLeft = min(maxCorner, max(0, bottomLeftRadius))
         let radiusBottomRight = min(maxCorner, max(0, bottomRightRadius))
         
-        guard !rect.isEmpty else {
-            return
-        }
+        guard !rect.isEmpty else { return }
         
         let topLeft = NSPoint(x: rect.minX, y: rect.maxY)
         let topRight = NSPoint(x: rect.maxX, y: rect.maxY)

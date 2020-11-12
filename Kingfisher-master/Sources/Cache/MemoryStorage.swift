@@ -48,14 +48,12 @@ public enum MemoryStorage {
         func store(value: T, forKey key: String, expiration: StorageExpiration? = nil) throws {
             storeNoThrow(value: value, forKey: key, expiration: expiration)
         }
-
+        // MARK: 图片存储在内存中
         func storeNoThrow(value: T, forKey key: String, expiration: StorageExpiration? = nil) {
             lock.lock()
             defer { lock.unlock() }
             let expiration = expiration ?? config.expiration
-            //判断是否过期，若已经过期直接返回
-            guard !expiration.isExpired else { return }
-            
+            guard !expiration.isExpired else { return }  //判断是否过期，若已经过期直接返回
             let object = StorageObject(value, key: key, expiration: expiration)
             storage.setObject(object, forKey: key as NSString, cost: value.cacheCost)
             keys.insert(key)
