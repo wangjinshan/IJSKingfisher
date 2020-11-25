@@ -87,9 +87,7 @@ extension Date {
         return !isPast(referenceDate: referenceDate)
     }
 
-    // `Date` in memory is a wrap for `TimeInterval`. But in file attribute it can only accept `Int` number.
-    // By default the system will `round` it. But it is not friendly for testing purpose.
-    // So we always `ceil` the value when used for file attributes.
+    // 内存中 Date是 TimeInterval, 但是在文件中只能是 Int, 不同系统会做四舍五入处理,所以我们使用 ceil
     var fileAttributeDate: Date {
         return Date(timeIntervalSince1970: ceil(timeIntervalSince1970))
     }

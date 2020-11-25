@@ -183,10 +183,7 @@ open class ImageCache {
             }
         }
         
-        let options = KingfisherParsedOptionsInfo([
-            .processor(TempProcessor(identifier: identifier)),
-            .cacheSerializer(serializer),
-            .callbackQueue(callbackQueue)
+        let options = KingfisherParsedOptionsInfo([.processor(TempProcessor(identifier: identifier)), .cacheSerializer(serializer), .callbackQueue(callbackQueue)
         ])
         store(image, original: original, forKey: key, options: options,
               toDisk: toDisk, completionHandler: completionHandler)
@@ -222,10 +219,7 @@ open class ImageCache {
             } else {
                 diskError = .cacheError(reason: .cannotConvertToData(object: data, error: error))
             }
-            result = CacheStoreResult(
-                memoryCacheResult: .success(()),
-                diskCacheResult: .failure(diskError)
-            )
+            result = CacheStoreResult(memoryCacheResult: .success(()), diskCacheResult: .failure(diskError))
         }
         if let completionHandler = completionHandler {
             callbackQueue.execute { completionHandler(result) }

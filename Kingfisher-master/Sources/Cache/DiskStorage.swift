@@ -18,11 +18,7 @@ public enum DiskStorage {
             if let directory = config.directory {
                 url = directory
             } else {
-                url = try config.fileManager.url(
-                    for: .cachesDirectory,
-                    in: .userDomainMask,
-                    appropriateFor: nil,
-                    create: true)
+                url = try config.fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             }
 
             let cacheName = "com.onevcat.Kingfisher.ImageCache.\(config.name)"
@@ -47,10 +43,7 @@ public enum DiskStorage {
             let path = directoryURL.path
             guard !fileManager.fileExists(atPath: path) else { return }
             do {
-                try fileManager.createDirectory(
-                    atPath: path,
-                    withIntermediateDirectories: true,
-                    attributes: nil)
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
             } catch {
                 throw KingfisherError.cacheError(reason: .cannotCreateDirectory(path: path, error: error))
             }
@@ -73,24 +66,16 @@ public enum DiskStorage {
             }
             let now = Date()
             let attributes: [FileAttributeKey : Any] = [
-                // The last access date.
-                .creationDate: now.fileAttributeDate,
-                // The estimated expiration date.
-                .modificationDate: expiration.estimatedExpirationSinceNow.fileAttributeDate
+                .creationDate: now.fileAttributeDate, //更新创建时间
+                .modificationDate: expiration.estimatedExpirationSinceNow.fileAttributeDate  //更新修改日期
             ]
             do {
                 try config.fileManager.setAttributes(attributes, ofItemAtPath: fileURL.path)
             } catch {
                 try? config.fileManager.removeItem(at: fileURL)
-                throw KingfisherError.cacheError(
-                    reason: .cannotSetCacheFileAttribute(
-                        filePath: fileURL.path,
-                        attributes: attributes,
-                        error: error
-                    )
+                throw KingfisherError.cacheError(reason: .cannotSetCacheFileAttribute(filePath: fileURL.path, attributes: attributes, error: error)
                 )
             }
-
             maybeCachedCheckingQueue.async {
                 self.maybeCached?.insert(fileURL.lastPathComponent)
             }
@@ -142,12 +127,7 @@ public enum DiskStorage {
 
         func isCached(forKey key: String, referenceDate: Date) -> Bool {
             do {
-                let result = try value(
-                    forKey: key,
-                    referenceDate: referenceDate,
-                    actuallyLoad: false,
-                    extendingExpiration: .none
-                )
+                let result = try value(forKey: key, referenceDate: referenceDate, actuallyLoad: false, extendingExpiration: .none)
                 return result != nil
             } catch {
                 return false
@@ -364,7 +344,6 @@ extension DiskStorage {
                     .modificationDate: expirationTime.estimatedExpirationSinceNow.fileAttributeDate
                 ]
             }
-
             try? fileManager.setAttributes(attributes, ofItemAtPath: url.path)
         }
     }

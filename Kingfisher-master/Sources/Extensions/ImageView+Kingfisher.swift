@@ -144,19 +144,10 @@ extension KingfisherWrapper where Base: KFCrossPlatformImageView {
 
     private func makeTransition(image: KFCrossPlatformImage, transition: ImageTransition, done: @escaping () -> Void) {
         #if !os(macOS)
-        UIView.transition(
-            with: self.base,
-            duration: 0.0,
-            options: [],
-            animations: { self.indicator?.stopAnimatingView() },
-            completion: { _ in
+        UIView.transition(with: self.base, duration: 0.0, options: [], animations: { self.indicator?.stopAnimatingView() }, completion: { _ in
                 var mutatingSelf = self
                 mutatingSelf.placeholder = nil
-                UIView.transition(
-                    with: self.base,
-                    duration: transition.duration,
-                    options: [transition.animationOptions, .allowUserInteraction],
-                    animations: { transition.animations?(self.base, image) },
+                UIView.transition(with: self.base, duration: transition.duration, options: [transition.animationOptions, .allowUserInteraction], animations: { transition.animations?(self.base, image) },
                     completion: { finished in
                         transition.completion?(finished)
                         done()

@@ -1,0 +1,540 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6B4206C3256BA6FA00E140F7 /* JSFisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B4206B9256BA6FA00E140F7 /* JSFisher.framework */; };
+		6B4206C8256BA6FA00E140F7 /* JSFisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4206C7256BA6FA00E140F7 /* JSFisherTests.swift */; };
+		6B4206CA256BA6FA00E140F7 /* JSFisher.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B4206BC256BA6FA00E140F7 /* JSFisher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6B8BB700256E007A003960BD /* UIImageView+JSFisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB6FF256E007A003960BD /* UIImageView+JSFisher.swift */; };
+		6B8BB70D256E0194003960BD /* JSFisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB70C256E0194003960BD /* JSFisher.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6B4206C4256BA6FA00E140F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6B4206B0256BA6FA00E140F7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6B4206B8256BA6FA00E140F7;
+			remoteInfo = JSFisher;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6B4206B9256BA6FA00E140F7 /* JSFisher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JSFisher.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B4206BC256BA6FA00E140F7 /* JSFisher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFisher.h; sourceTree = "<group>"; };
+		6B4206BD256BA6FA00E140F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6B4206C2256BA6FA00E140F7 /* JSFisherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSFisherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B4206C7256BA6FA00E140F7 /* JSFisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSFisherTests.swift; sourceTree = "<group>"; };
+		6B4206C9256BA6FA00E140F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6B8BB6FF256E007A003960BD /* UIImageView+JSFisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+JSFisher.swift"; sourceTree = "<group>"; };
+		6B8BB70C256E0194003960BD /* JSFisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSFisher.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6B4206B6256BA6FA00E140F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B4206BF256BA6FA00E140F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B4206C3256BA6FA00E140F7 /* JSFisher.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6B4206AF256BA6FA00E140F7 = {
+			isa = PBXGroup;
+			children = (
+				6B4206BB256BA6FA00E140F7 /* JSFisher */,
+				6B4206C6256BA6FA00E140F7 /* JSFisherTests */,
+				6B4206BA256BA6FA00E140F7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6B4206BA256BA6FA00E140F7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6B4206B9256BA6FA00E140F7 /* JSFisher.framework */,
+				6B4206C2256BA6FA00E140F7 /* JSFisherTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6B4206BB256BA6FA00E140F7 /* JSFisher */ = {
+			isa = PBXGroup;
+			children = (
+				6B8BB703256E00AA003960BD /* General */,
+				6B8BB705256E00BF003960BD /* Image */,
+				6B8BB706256E00C9003960BD /* Networking */,
+				6B8BB707256E00D2003960BD /* Cache */,
+				6B8BB6FE256E004D003960BD /* Extensions */,
+				6B4206BD256BA6FA00E140F7 /* Info.plist */,
+				6B8BB708256E00E1003960BD /* Views */,
+				6B4206BC256BA6FA00E140F7 /* JSFisher.h */,
+				6B8BB709256E00EF003960BD /* Utility */,
+			);
+			path = JSFisher;
+			sourceTree = "<group>";
+		};
+		6B4206C6256BA6FA00E140F7 /* JSFisherTests */ = {
+			isa = PBXGroup;
+			children = (
+				6B4206C7256BA6FA00E140F7 /* JSFisherTests.swift */,
+				6B4206C9256BA6FA00E140F7 /* Info.plist */,
+			);
+			path = JSFisherTests;
+			sourceTree = "<group>";
+		};
+		6B8BB6FE256E004D003960BD /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6B8BB6FF256E007A003960BD /* UIImageView+JSFisher.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		6B8BB703256E00AA003960BD /* General */ = {
+			isa = PBXGroup;
+			children = (
+				6B8BB704256E00B4003960BD /* ImageSource */,
+				6B8BB70C256E0194003960BD /* JSFisher.swift */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		6B8BB704256E00B4003960BD /* ImageSource */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ImageSource;
+			sourceTree = "<group>";
+		};
+		6B8BB705256E00BF003960BD /* Image */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		6B8BB706256E00C9003960BD /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		6B8BB707256E00D2003960BD /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
+		6B8BB708256E00E1003960BD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6B8BB709256E00EF003960BD /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6B4206B4256BA6FA00E140F7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B4206CA256BA6FA00E140F7 /* JSFisher.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6B4206B8256BA6FA00E140F7 /* JSFisher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6B4206CD256BA6FA00E140F7 /* Build configuration list for PBXNativeTarget "JSFisher" */;
+			buildPhases = (
+				6B4206B4256BA6FA00E140F7 /* Headers */,
+				6B4206B5256BA6FA00E140F7 /* Sources */,
+				6B4206B6256BA6FA00E140F7 /* Frameworks */,
+				6B4206B7256BA6FA00E140F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JSFisher;
+			productName = JSFisher;
+			productReference = 6B4206B9256BA6FA00E140F7 /* JSFisher.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		6B4206C1256BA6FA00E140F7 /* JSFisherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6B4206D0256BA6FA00E140F7 /* Build configuration list for PBXNativeTarget "JSFisherTests" */;
+			buildPhases = (
+				6B4206BE256BA6FA00E140F7 /* Sources */,
+				6B4206BF256BA6FA00E140F7 /* Frameworks */,
+				6B4206C0256BA6FA00E140F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6B4206C5256BA6FA00E140F7 /* PBXTargetDependency */,
+			);
+			name = JSFisherTests;
+			productName = JSFisherTests;
+			productReference = 6B4206C2256BA6FA00E140F7 /* JSFisherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6B4206B0256BA6FA00E140F7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1220;
+				LastUpgradeCheck = 1220;
+				TargetAttributes = {
+					6B4206B8256BA6FA00E140F7 = {
+						CreatedOnToolsVersion = 12.2;
+						LastSwiftMigration = 1220;
+					};
+					6B4206C1256BA6FA00E140F7 = {
+						CreatedOnToolsVersion = 12.2;
+					};
+				};
+			};
+			buildConfigurationList = 6B4206B3256BA6FA00E140F7 /* Build configuration list for PBXProject "JSFisher" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6B4206AF256BA6FA00E140F7;
+			productRefGroup = 6B4206BA256BA6FA00E140F7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6B4206B8256BA6FA00E140F7 /* JSFisher */,
+				6B4206C1256BA6FA00E140F7 /* JSFisherTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6B4206B7256BA6FA00E140F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B4206C0256BA6FA00E140F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6B4206B5256BA6FA00E140F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B8BB700256E007A003960BD /* UIImageView+JSFisher.swift in Sources */,
+				6B8BB70D256E0194003960BD /* JSFisher.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B4206BE256BA6FA00E140F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6B4206C8256BA6FA00E140F7 /* JSFisherTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6B4206C5256BA6FA00E140F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6B4206B8256BA6FA00E140F7 /* JSFisher */;
+			targetProxy = 6B4206C4256BA6FA00E140F7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6B4206CB256BA6FA00E140F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6B4206CC256BA6FA00E140F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6B4206CE256BA6FA00E140F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 9BEVZGB29V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = JSFisher/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wjs.JSFisher;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6B4206CF256BA6FA00E140F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 9BEVZGB29V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = JSFisher/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wjs.JSFisher;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6B4206D1256BA6FA00E140F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9BEVZGB29V;
+				INFOPLIST_FILE = JSFisherTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wjs.JSFisherTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6B4206D2256BA6FA00E140F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9BEVZGB29V;
+				INFOPLIST_FILE = JSFisherTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wjs.JSFisherTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6B4206B3256BA6FA00E140F7 /* Build configuration list for PBXProject "JSFisher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B4206CB256BA6FA00E140F7 /* Debug */,
+				6B4206CC256BA6FA00E140F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6B4206CD256BA6FA00E140F7 /* Build configuration list for PBXNativeTarget "JSFisher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B4206CE256BA6FA00E140F7 /* Debug */,
+				6B4206CF256BA6FA00E140F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6B4206D0256BA6FA00E140F7 /* Build configuration list for PBXNativeTarget "JSFisherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6B4206D1256BA6FA00E140F7 /* Debug */,
+				6B4206D2256BA6FA00E140F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6B4206B0256BA6FA00E140F7 /* Project object */;
+}

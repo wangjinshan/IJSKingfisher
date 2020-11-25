@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Demo/../JSFisherDemo/JSFisherDemo.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:JSFisher/JSFisher.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Kingfisher.xcodeproj">
    </FileRef>
    <FileRef

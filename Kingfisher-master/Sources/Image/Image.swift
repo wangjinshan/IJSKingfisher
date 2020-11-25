@@ -195,7 +195,7 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
 
     // MARK: 把 image 转成 Data
     public func data(format: ImageFormat, compressionQuality: CGFloat = 1.0) -> Data? {
-        return autoreleasepool { () -> Data? in
+        return autoreleasepool { () -> Data? in //及时创建及时释放
             let data: Data?
             switch format {
             case .PNG: data = pngRepresentation()
@@ -213,14 +213,8 @@ extension KingfisherWrapper where Base: KFCrossPlatformImage {
 
     // MARK: 生成一个动图, 目前只支持GIF
     public static func animatedImage(data: Data, options: ImageCreatingOptions) -> KFCrossPlatformImage? {
-        let info: [String: Any] = [kCGImageSourceShouldCache as String: true,
-                                   kCGImageSourceTypeIdentifierHint as String: kUTTypeGIF
-        ]
-        
-        guard let imageSource = CGImageSourceCreateWithData(data as CFData, info as CFDictionary) else {
-            return nil
-        }
-        
+        let info: [String: Any] = [kCGImageSourceShouldCache as String: true, kCGImageSourceTypeIdentifierHint as String: kUTTypeGIF]
+        guard let imageSource = CGImageSourceCreateWithData(data as CFData, info as CFDictionary) else { return nil }
         #if os(macOS)
         guard let animatedImage = GIFAnimatedImage(from: imageSource, for: info, options: options) else {
             return nil
