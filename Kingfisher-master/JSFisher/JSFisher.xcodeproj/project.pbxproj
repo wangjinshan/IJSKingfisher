@@ -12,6 +12,10 @@
 		6B4206CA256BA6FA00E140F7 /* JSFisher.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B4206BC256BA6FA00E140F7 /* JSFisher.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6B8BB700256E007A003960BD /* UIImageView+JSFisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB6FF256E007A003960BD /* UIImageView+JSFisher.swift */; };
 		6B8BB70D256E0194003960BD /* JSFisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB70C256E0194003960BD /* JSFisher.swift */; };
+		6B8BB782256E38E2003960BD /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB781256E38E2003960BD /* Source.swift */; };
+		6B8BB786256E38F7003960BD /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB785256E38F7003960BD /* Resource.swift */; };
+		6B8BB790256E4255003960BD /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB78F256E4255003960BD /* Placeholder.swift */; };
+		6B8BB794256E45C9003960BD /* JSOptionsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BB793256E45C9003960BD /* JSOptionsInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +37,10 @@
 		6B4206C9256BA6FA00E140F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B8BB6FF256E007A003960BD /* UIImageView+JSFisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+JSFisher.swift"; sourceTree = "<group>"; };
 		6B8BB70C256E0194003960BD /* JSFisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSFisher.swift; sourceTree = "<group>"; };
+		6B8BB781256E38E2003960BD /* Source.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Source.swift; sourceTree = "<group>"; };
+		6B8BB785256E38F7003960BD /* Resource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		6B8BB78F256E4255003960BD /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
+		6B8BB793256E45C9003960BD /* JSOptionsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSOptionsInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +118,7 @@
 			children = (
 				6B8BB704256E00B4003960BD /* ImageSource */,
 				6B8BB70C256E0194003960BD /* JSFisher.swift */,
+				6B8BB793256E45C9003960BD /* JSOptionsInfo.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -117,6 +126,8 @@
 		6B8BB704256E00B4003960BD /* ImageSource */ = {
 			isa = PBXGroup;
 			children = (
+				6B8BB781256E38E2003960BD /* Source.swift */,
+				6B8BB785256E38F7003960BD /* Resource.swift */,
 			);
 			path = ImageSource;
 			sourceTree = "<group>";
@@ -124,6 +135,7 @@
 		6B8BB705256E00BF003960BD /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				6B8BB78F256E4255003960BD /* Placeholder.swift */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -265,8 +277,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B8BB786256E38F7003960BD /* Resource.swift in Sources */,
+				6B8BB790256E4255003960BD /* Placeholder.swift in Sources */,
 				6B8BB700256E007A003960BD /* UIImageView+JSFisher.swift in Sources */,
 				6B8BB70D256E0194003960BD /* JSFisher.swift in Sources */,
+				6B8BB782256E38E2003960BD /* Source.swift in Sources */,
+				6B8BB794256E45C9003960BD /* JSOptionsInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

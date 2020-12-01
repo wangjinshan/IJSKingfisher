@@ -39,18 +39,15 @@ public typealias PrefetcherCompletionHandler =
 public typealias PrefetcherSourceCompletionHandler =
     ((_ skippedSources: [Source], _ failedSources: [Source], _ completedSources: [Source]) -> Void)
 
-/// `ImagePrefetcher` represents a downloading manager for requesting many images via URLs, then caching them.
-/// This is useful when you know a list of image resources and want to download them before showing. It also works with
-/// some Cocoa prefetching mechanism like table view or collection view `prefetchDataSource`, to start image downloading
-/// and caching before they display on screen.
+
+/// 预加载类
 public class ImagePrefetcher: CustomStringConvertible {
 
     public var description: String {
         return "\(Unmanaged.passUnretained(self).toOpaque())"
     }
     
-    /// The maximum concurrent downloads to use when prefetching images. Default is 5.
-    public var maxConcurrentDownloads = 5
+    public var maxConcurrentDownloads = 5  //设置最大缓存并发量
 
     private let prefetchSources: [Source]
     private let optionsInfo: KingfisherParsedOptionsInfo

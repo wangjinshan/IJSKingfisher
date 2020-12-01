@@ -2,6 +2,7 @@
 import UIKit
 
 public typealias JSImageView = UIImageView
+public typealias JSView = UIView
 
 /// 包装器
 public struct JSFisherWrapper<Base> {

@@ -6,13 +6,14 @@
 //
 
 import UIKit
+import JSFisher
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var backImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+//        backImageView.js.
     }
 }
 

@@ -1,8 +1,9 @@
 
 import UIKit
 
-extension JSFisherWrapper where Base: JSImageView {
-    public func setImage() {
+public extension JSFisherWrapper where Base: JSImageView {
+
+    public func setImage( source: Source?, placeholder: Placeholder? = nil) {
 
     }
 }

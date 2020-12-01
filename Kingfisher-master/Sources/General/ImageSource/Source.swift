@@ -1,7 +1,11 @@
 
 import Foundation
 
+/// 资源
 public enum Source {
+
+    case network(Resource)
+    case provider(ImageDataProvider)
 
     public enum Identifier {
         public typealias Value = UInt
@@ -11,9 +15,6 @@ public enum Source {
             return current
         }
     }
-
-    case network(Resource)
-    case provider(ImageDataProvider)
 
     public var cacheKey: String {
         switch self {
@@ -32,16 +33,12 @@ public enum Source {
 
 extension Source {
     var asResource: Resource? {
-        guard case .network(let resource) = self else {
-            return nil
-        }
+        guard case .network(let resource) = self else { return nil }
         return resource
     }
 
     var asProvider: ImageDataProvider? {
-        guard case .provider(let provider) = self else {
-            return nil
-        }
+        guard case .provider(let provider) = self else { return nil }
         return provider
     }
 }
